@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace EndlessMarioRebornGit
 {
@@ -11,6 +12,12 @@ namespace EndlessMarioRebornGit
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        Mario mrio;
+        Background bckgrnd;
+        //Pipe pip;
+        StartingFlag strtFlg;
+        List<GameObject> lstObjsToDraw;
+        static List<GameObject> allObjectsButMario;
 
         public Game1()
         {
@@ -39,6 +46,20 @@ namespace EndlessMarioRebornGit
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            allObjectsButMario = new List<GameObject>();
+            bckgrnd = new Background(Content.Load<Texture2D>("background"), Content.Load<Texture2D>("background"), GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, allObjectsButMario);
+            List<Texture2D> textures = new List<Texture2D>();
+            foreach (string assetName in Mario.texturesName)
+            {
+                textures.Add(Content.Load<Texture2D>(assetName));
+            }
+            mrio = new Mario(textures);
+            lstObjsToDraw = new List<GameObject>();
+            //Adds the objects in the ToDrawList to the allObjects list
+            foreach (GameObject obj in lstObjsToDraw)
+            {
+                allObjectsButMario.Add(obj);
+            }
 
             // TODO: use this.Content to load your game content here
         }
