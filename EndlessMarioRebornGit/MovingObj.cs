@@ -74,7 +74,6 @@ namespace EndlessMarioRebornGit
                 {
                     HandleNotWalkingSpeed();
                 }
-                
             }
             if (speedY != 0)  //Object is falling or jumping
             {
@@ -89,7 +88,7 @@ namespace EndlessMarioRebornGit
         /// </summary>
         private void HandleSpeedChangesInWalking()
         {
-            if (Math.Abs(speedX) < maxSpeed)
+            if ((isFlipped && speedX > -maxSpeed) ||(!isFlipped && speedX < maxSpeed))
             {
                 speedX = speedX + accelerationX;
                 if (isFlipped)  //facing left
@@ -132,8 +131,7 @@ namespace EndlessMarioRebornGit
                     accelerationX = 0;
                 }
             }
-
-
+            loc.X = loc.X + speedX;
         }
 
         /// <summary>
@@ -247,6 +245,10 @@ namespace EndlessMarioRebornGit
             //if (!isWalking)  //need to initiate walk
             if ((!isWalkingPrevFrame) || (isWalkingPrevFrame && isChangingDir))
             {
+                if (isWalkingPrevFrame && isChangingDir)
+                {
+                    string s = "debug";
+                }
                 if (dir == Direction.Right)  //not flipped
                 {
                     accelerationX = walkingPower - Physics.FRICTION;
