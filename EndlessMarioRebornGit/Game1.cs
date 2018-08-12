@@ -47,13 +47,18 @@ namespace EndlessMarioRebornGit
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             allObjectsButMario = new List<GameObject>();
-            bckgrnd = new Background(Content.Load<Texture2D>("background"), Content.Load<Texture2D>("background"), GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, allObjectsButMario);
-            List<Texture2D> textures = new List<Texture2D>();
-            foreach (string assetName in Mario.texturesName)
+            //bckgrnd = new Background(Content.Load<Texture2D>("background"), Content.Load<Texture2D>("background"), GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, allObjectsButMario);
+            List<Texture2D> mrioFacingRightTextures = new List<Texture2D>();
+            List<Texture2D> mrioFacingLeftTextures = new List<Texture2D>();
+            foreach (string assetName in Mario.texturesNameFacingRight)
             {
-                textures.Add(Content.Load<Texture2D>(assetName));
+                mrioFacingRightTextures.Add(Content.Load<Texture2D>(@"Mario\" + assetName));
             }
-            mrio = new Mario(textures);
+            foreach (string assetName in Mario.texturesNameFacingLeft)
+            {
+                mrioFacingLeftTextures.Add(Content.Load<Texture2D>(@"Mario\" + assetName));
+            }
+            mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures);
             lstObjsToDraw = new List<GameObject>();
             //Adds the objects in the ToDrawList to the allObjects list
             foreach (GameObject obj in lstObjsToDraw)
@@ -82,7 +87,15 @@ namespace EndlessMarioRebornGit
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                mrio.Walk(Direction.Right);
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                mrio.Walk(Direction.Left);
+            }
+            mrio.Update();
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -95,9 +108,12 @@ namespace EndlessMarioRebornGit
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
 
+            spriteBatch.Draw(mrio.CurrentTexture, new Rectangle((int)mrio.Loc.X, (int)mrio.Loc.Y, mrio.CurrentTexture.Width, mrio.CurrentTexture.Height), Color.White);
             // TODO: Add your drawing code here
 
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

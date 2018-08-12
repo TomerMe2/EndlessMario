@@ -11,14 +11,16 @@ namespace EndlessMarioRebornGit
     public enum Direction
     {
         Left,
-        Right
+        Right,
+        Rand
     }
     abstract class MovingObj : GameObject
     {
-        private const int FRAMES_BEFORE_CHANGING_TEXTURE = 4;
+        private const int FRAMES_BEFORE_CHANGING_TEXTURE = 6;
         private List<Texture2D> texturesFacingRight;
         private List<Texture2D> texturesFacingLeft;
         protected bool isWalking;
+        protected bool isWalkingPrevFrame;
         protected bool isFlipped;
         protected float accelerationX;
         protected float speedX;
@@ -29,6 +31,7 @@ namespace EndlessMarioRebornGit
         private float walkingPower;
         private int changingTextureCounter;
 
+        //TODO: HANDLE CHANGING DIRECTIONS DURING WALKING
         public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower, 
             float jumpingPower, float maxSpeed) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
         {
@@ -39,6 +42,7 @@ namespace EndlessMarioRebornGit
             this.texturesFacingRight = texturesFacingRight;
             this.texturesFacingLeft = texturesFacingLeft;
             isWalking = false;
+            isWalkingPrevFrame = false;
             isFlipped = false;
             accelerationX = 0;
             accelerationY = 0;
@@ -57,7 +61,7 @@ namespace EndlessMarioRebornGit
                 HandleSpeedChangesInWalking();
                 if (speedY == 0)  //if it's not jumping or falling
                 {
-                    HandleTextureChanesInWalking();
+                    HandleTextureChangesInWalking();
                 }      
             }
             else
@@ -66,12 +70,18 @@ namespace EndlessMarioRebornGit
                 {
                     HandleIdleTexture(); //make the texture idle
                 }
-                //Need to handle friction stopping here
+                if (speedX != 0)   //the object need to slow down because of friction
+                {
+                    HandleNotWalkingSpeed();
+                }
+                
             }
             if (speedY != 0)  //Object is falling or jumping
             {
                 //Need to handle speed changes in jumping and know where to land
             }
+            isWalkingPrevFrame = isWalking;
+            isWalking = false;   //prepare it for the next frame
         }
 
         /// <summary>
@@ -97,12 +107,39 @@ namespace EndlessMarioRebornGit
                     }
                 }
             }
+            loc.X = loc.X + speedX;
+        }
+
+        private void HandleNotWalkingSpeed()
+        {
+            if (isFlipped)
+            {
+                accelerationX = Physics.FRICTION;
+                speedX = speedX + accelerationX;
+                if (speedX > 0)  //if he is starting to go left
+                {
+                    speedX = 0;
+                    accelerationX = 0;
+                }
+            }
+            else
+            {
+                accelerationX = -Physics.FRICTION;
+                speedX = speedX + accelerationX;
+                if (speedX < 0)  //if he is starting to go right
+                {
+                    speedX = 0;
+                    accelerationX = 0;
+                }
+            }
+
+
         }
 
         /// <summary>
         /// Changes the texture of the object during walking
         /// </summary>
-        private void HandleTextureChanesInWalking()
+        private void HandleTextureChangesInWalking()
         {
             if (changingTextureCounter == FRAMES_BEFORE_CHANGING_TEXTURE)
             {
@@ -126,7 +163,7 @@ namespace EndlessMarioRebornGit
                     }
                     else
                     {
-                        currentTexture = texturesFacingLeft.ElementAt(1);
+                        currentTexture = texturesFacingRight.ElementAt(1);
                     }
                 }
                 else
@@ -155,11 +192,11 @@ namespace EndlessMarioRebornGit
         {
             if (isFlipped)
             {
-                currentTexture = texturesFacingRight.ElementAt(0);
+                currentTexture = texturesFacingLeft.ElementAt(0);
             }
             else
             {
-                currentTexture = texturesFacingLeft.ElementAt(0);
+                currentTexture = texturesFacingRight.ElementAt(0);
             }
         }
         
@@ -204,16 +241,28 @@ namespace EndlessMarioRebornGit
             }
         }
 
-        public virtual void Walk(Direction dir, float speed)
+        public virtual void Walk(Direction dir)
         {
-            if (!isWalking)
+            bool isChangingDir = (dir == Direction.Left && !isFlipped) || (dir == Direction.Right && isFlipped);
+            //if (!isWalking)  //need to initiate walk
+            if ((!isWalkingPrevFrame) || (isWalkingPrevFrame && isChangingDir))
             {
-
+                if (dir == Direction.Right)  //not flipped
+                {
+                    accelerationX = walkingPower - Physics.FRICTION;
+                    isFlipped = false;     //because the obj is facing right
+                }
+                else   //flipped
+                {
+                    accelerationX = -walkingPower + Physics.FRICTION;
+                    isFlipped = true;       //because the obj is facing left
+                }
             }
             else  //need to continue the walk
             {
 
             }
+            isWalking = true;
         }
 
         /// <summary>
