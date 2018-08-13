@@ -8,7 +8,8 @@ namespace EndlessMarioRebornGit
 {
     static class Physics
     {
-        public const float GRAVITY = 10;
+        public const float GRAVITY = 1;
         public const float FRICTION = 0.4f;
+        public const int FLOOR_LOC = 200;
     }
 }

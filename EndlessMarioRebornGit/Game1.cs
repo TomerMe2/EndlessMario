@@ -95,6 +95,10 @@ namespace EndlessMarioRebornGit
             {
                 mrio.Walk(Direction.Left);
             }
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                mrio.Jump();
+            }
             mrio.Update();
             // TODO: Add your update logic here
 

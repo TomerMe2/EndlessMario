@@ -22,6 +22,7 @@ namespace EndlessMarioRebornGit
         protected bool isWalking;
         protected bool isWalkingPrevFrame;
         protected bool isFlipped;
+        protected bool isJumping;
         protected float accelerationX;
         protected float speedX;
         protected float accelerationY;
@@ -31,7 +32,8 @@ namespace EndlessMarioRebornGit
         private float walkingPower;
         private int changingTextureCounter;
 
-        //TODO: HANDLE CHANGING DIRECTIONS DURING WALKING
+        private int jumpingCounter;
+        //TODO: HANDLE CHANGING DIRECTIONS FOR THE TEXTURES DURING JUMPING
         public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower, 
             float jumpingPower, float maxSpeed) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
         {
@@ -44,6 +46,7 @@ namespace EndlessMarioRebornGit
             isWalking = false;
             isWalkingPrevFrame = false;
             isFlipped = false;
+            isJumping = false;
             accelerationX = 0;
             accelerationY = 0;
             speedX = 0;
@@ -52,6 +55,8 @@ namespace EndlessMarioRebornGit
             this.jumpingPower = jumpingPower;
             this.walkingPower = walkingPower;
             changingTextureCounter = 0;
+
+            jumpingCounter = 0;
         }
 
         public void Update()
@@ -59,14 +64,14 @@ namespace EndlessMarioRebornGit
             if (isWalking)
             {
                 HandleSpeedChangesInWalking();
-                if (speedY == 0)  //if it's not jumping or falling
+                if (!isJumping)  //if it's not jumping or falling
                 {
                     HandleTextureChangesInWalking();
-                }      
+                }   
             }
             else
             {
-                if (speedY == 0)
+                if (!isJumping)
                 {
                     HandleIdleTexture(); //make the texture idle
                 }
@@ -75,12 +80,28 @@ namespace EndlessMarioRebornGit
                     HandleNotWalkingSpeed();
                 }
             }
-            if (speedY != 0)  //Object is falling or jumping
+            if (isJumping)  //Object is falling or jumping
             {
                 //Need to handle speed changes in jumping and know where to land
+                HandleSpeedChangesInJumpOrFall();
             }
             isWalkingPrevFrame = isWalking;
             isWalking = false;   //prepare it for the next frame
+            loc.X = loc.X + speedX;
+            loc.Y = loc.Y + speedY;
+        }
+
+        private void HandleSpeedChangesInJumpOrFall()
+        {
+            speedY = speedY + accelerationY;
+            //THE PROBLEM IS HERE, CUS HE WONT JUMP AGAIN
+            if (loc.Y > Physics.FLOOR_LOC && isJumping)  //impact with the floor
+            {
+                loc.Y = Physics.FLOOR_LOC;
+                speedY = 0;
+                accelerationY = 0;
+                isJumping = false;
+            }
         }
 
         /// <summary>
@@ -106,7 +127,6 @@ namespace EndlessMarioRebornGit
                     }
                 }
             }
-            loc.X = loc.X + speedX;
         }
 
         private void HandleNotWalkingSpeed()
@@ -131,7 +151,6 @@ namespace EndlessMarioRebornGit
                     accelerationX = 0;
                 }
             }
-            loc.X = loc.X + speedX;
         }
 
         /// <summary>
@@ -139,19 +158,31 @@ namespace EndlessMarioRebornGit
         /// </summary>
         private void HandleTextureChangesInWalking()
         {
+            int currIndex = 0;
+            if (isFlipped)
+            {
+                currIndex = texturesFacingLeft.FindIndex(new Predicate<Texture2D>(currentTexture.Equals)); //Finds the index of the current texture
+            }
+            else
+            {
+                currIndex = texturesFacingRight.FindIndex(new Predicate<Texture2D>(currentTexture.Equals)); //Finds the index of the current texture
+            }
+            if (currIndex == texturesFacingLeft.Count - 1 && !isJumping)  //it's the jumping texture, and he is not jumping
+            {
+                if (isFlipped)
+                {
+                    currentTexture = texturesFacingLeft.ElementAt(1);
+                }
+                else
+                {
+                    currentTexture = texturesFacingRight.ElementAt(1);
+                }
+                changingTextureCounter = 0;
+            }
             if (changingTextureCounter == FRAMES_BEFORE_CHANGING_TEXTURE)
             {
                 //It's time to change a texture!
                 changingTextureCounter = 0;
-                int currIndex = 0;
-                if (isFlipped)
-                {
-                    currIndex = texturesFacingLeft.FindIndex(new Predicate<Texture2D>(currentTexture.Equals)); //Finds the index of the current texture
-                }
-                else
-                {
-                    currIndex = texturesFacingRight.FindIndex(new Predicate<Texture2D>(currentTexture.Equals)); //Finds the index of the current texture
-                }
                 if (currIndex == texturesFacingLeft.Count - 2)   //if it's the last walking texture
                 {
                     //Will go to the first walking texture
@@ -203,8 +234,14 @@ namespace EndlessMarioRebornGit
         /// </summary>
         public virtual void Jump()
         {
-            if (speedY == 0)   //if it's not jumping alraedy
+            if (!isJumping)   //if it's not jumping alraedy
             {
+                jumpingCounter++;
+                if (jumpingCounter > 1)
+                {
+                    string s = "debug";
+                }
+                isJumping = true;
                 accelerationY = Physics.GRAVITY;
                 speedY = - jumpingPower + accelerationY;
                 UpdateTextureToJumpingFalling();   //Updating the textures
@@ -218,6 +255,7 @@ namespace EndlessMarioRebornGit
         {
             if (speedY == 0)   //if it's not falling already
             {
+                isJumping = true;
                 accelerationY = Physics.GRAVITY;
                 speedY = accelerationY;
                 UpdateTextureToJumpingFalling();    //Updating the textures
@@ -242,12 +280,11 @@ namespace EndlessMarioRebornGit
         public virtual void Walk(Direction dir)
         {
             bool isChangingDir = (dir == Direction.Left && !isFlipped) || (dir == Direction.Right && isFlipped);
-            //if (!isWalking)  //need to initiate walk
             if ((!isWalkingPrevFrame) || (isWalkingPrevFrame && isChangingDir))
             {
-                if (isWalkingPrevFrame && isChangingDir)
+                if (!isWalking)
                 {
-                    string s = "debug";
+                    changingTextureCounter = FRAMES_BEFORE_CHANGING_TEXTURE;
                 }
                 if (dir == Direction.Right)  //not flipped
                 {
@@ -262,7 +299,7 @@ namespace EndlessMarioRebornGit
             }
             else  //need to continue the walk
             {
-
+                //For now, I need this part to do nothing
             }
             isWalking = true;
         }
