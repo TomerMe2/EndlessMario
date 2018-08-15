@@ -17,7 +17,7 @@ namespace EndlessMarioRebornGit
         //Pipe pip;
         StartingFlag strtFlg;
         List<GameObject> lstObjsToDraw;
-        static List<GameObject> allObjectsButMario;
+        List<GameObject> allObjectsButMario;
 
         public Game1()
         {
@@ -119,6 +119,43 @@ namespace EndlessMarioRebornGit
 
             spriteBatch.End();
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private GameObject isCollidingX(GameObject obj)
+        {
+            float objLeft = obj.Loc.X;
+            float objRight = obj.Loc.X + obj.CurrentTexture.Width;
+            float toCheckVsLeft = 0;
+            float toCheckVsRight = 0;
+            if (!obj.Equals(mrio))
+            {
+                //TODO: IMPLEMENT THIS PART
+                //Check collide vs mario
+            }
+            foreach (GameObject toCheckVs in allObjectsButMario)
+            {
+                if (!obj.Equals(toCheckVs))
+                {
+                    toCheckVsLeft = toCheckVs.Loc.X;
+                    toCheckVsRight = toCheckVs.Loc.X + obj.CurrentTexture.Width;
+                    //Moving right and colliding with that obj
+                    if (objRight > toCheckVsLeft && objLeft < toCheckVsRight)
+                    {
+                        return toCheckVs;
+                    }
+                    //Moving left and colliding with that obj
+                    if (objLeft < toCheckVsRight && objRight > toCheckVsLeft)
+                    {
+                        return toCheckVs;
+                    }
+                }
+            }
+            return null;
         }
     }
 }

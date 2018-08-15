@@ -67,7 +67,11 @@ namespace EndlessMarioRebornGit
                 if (!isJumping)  //if it's not jumping or falling
                 {
                     HandleTextureChangesInWalking();
-                }   
+                }
+                else   //it's jumping or falling, we need to check for change of direction
+                {
+                    HandleTextureFlipJumpingAndWalking();
+                }
             }
             else
             {
@@ -91,6 +95,23 @@ namespace EndlessMarioRebornGit
             loc.Y = loc.Y + speedY;
         }
 
+        private void HandleTextureFlipJumpingAndWalking()
+        {
+            if (accelerationX > 0)
+            {
+                if (!currentTexture.Equals(texturesFacingRight.ElementAt(texturesFacingRight.Count-1)))  //if it's not the correct texture
+                {
+                    currentTexture = texturesFacingRight.ElementAt(texturesFacingRight.Count - 1);
+                }
+            }
+            if (accelerationX < 0)
+            {
+                if (!currentTexture.Equals(texturesFacingLeft.ElementAt(texturesFacingLeft.Count - 1)))  //if it's not the correct texture
+                {
+                    currentTexture = texturesFacingLeft.ElementAt(texturesFacingLeft.Count - 1);
+                }
+            }
+        }
         private void HandleSpeedChangesInJumpOrFall()
         {
             speedY = speedY + accelerationY;
