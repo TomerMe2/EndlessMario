@@ -17,12 +17,13 @@ namespace EndlessMarioRebornGit
         //Pipe pip;
         StartingFlag strtFlg;
         List<GameObject> lstObjsToDraw;
-        List<GameObject> allObjectsButMario;
+        List<GameObject> allObjects;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            allObjects = new List<GameObject>();
         }
 
         /// <summary>
@@ -46,7 +47,6 @@ namespace EndlessMarioRebornGit
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            allObjectsButMario = new List<GameObject>();
             //bckgrnd = new Background(Content.Load<Texture2D>("background"), Content.Load<Texture2D>("background"), GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, allObjectsButMario);
             List<Texture2D> mrioFacingRightTextures = new List<Texture2D>();
             List<Texture2D> mrioFacingLeftTextures = new List<Texture2D>();
@@ -59,11 +59,12 @@ namespace EndlessMarioRebornGit
                 mrioFacingLeftTextures.Add(Content.Load<Texture2D>(@"Mario\" + assetName));
             }
             mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures);
+            allObjects.Add(mrio);
             lstObjsToDraw = new List<GameObject>();
             //Adds the objects in the ToDrawList to the allObjects list
             foreach (GameObject obj in lstObjsToDraw)
             {
-                allObjectsButMario.Add(obj);
+                allObjects.Add(obj);
             }
 
             // TODO: use this.Content to load your game content here
@@ -100,7 +101,6 @@ namespace EndlessMarioRebornGit
                 mrio.Jump();
             }
             mrio.Update();
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -113,8 +113,11 @@ namespace EndlessMarioRebornGit
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
-
-            spriteBatch.Draw(mrio.CurrentTexture, new Rectangle((int)mrio.Loc.X, (int)mrio.Loc.Y, mrio.CurrentTexture.Width, mrio.CurrentTexture.Height), Color.White);
+            foreach (GameObject obj in allObjects)
+            {
+                spriteBatch.Draw(obj.CurrentTexture, new Rectangle((int)obj.Loc.X, (int)obj.Loc.Y, obj.CurrentTexture.Width, obj.CurrentTexture.Height), Color.White);
+            }
+            //spriteBatch.Draw(mrio.CurrentTexture, new Rectangle((int)mrio.Loc.X, (int)mrio.Loc.Y, mrio.CurrentTexture.Width, mrio.CurrentTexture.Height), Color.White);
             // TODO: Add your drawing code here
 
             spriteBatch.End();
@@ -132,14 +135,9 @@ namespace EndlessMarioRebornGit
             float objRight = obj.Loc.X + obj.CurrentTexture.Width;
             float toCheckVsLeft = 0;
             float toCheckVsRight = 0;
-            if (!obj.Equals(mrio))
+            foreach (GameObject toCheckVs in allObjects)
             {
-                //TODO: IMPLEMENT THIS PART
-                //Check collide vs mario
-            }
-            foreach (GameObject toCheckVs in allObjectsButMario)
-            {
-                if (!obj.Equals(toCheckVs))
+                if (!obj.Equals(toCheckVs) && toCheckVs.IsCollideAble)
                 {
                     toCheckVsLeft = toCheckVs.Loc.X;
                     toCheckVsRight = toCheckVs.Loc.X + obj.CurrentTexture.Width;
