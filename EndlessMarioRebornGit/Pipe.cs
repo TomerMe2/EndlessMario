@@ -10,11 +10,12 @@ namespace EndlessMarioRebornGit
 {
     class Pipe : GameObject
     {
-        public static string textureName = "GreenPipe.png";
+        public static string textureName = "GreenPipe";
 
-        public Pipe(Texture2D texture, Vector2 loc, float scale) : base(loc, texture, scale, true)
+        public Pipe(Texture2D texture, float locX, float scale) :
+            base(new Vector2(locX, Physics.FLOOR_LOC - texture.Height*scale), texture, scale, true)
         {
 
-        } 
+        }
     }
 }

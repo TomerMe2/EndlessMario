@@ -8,18 +8,19 @@ namespace EndlessMarioRebornGit
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class MrioGame : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Mario mrio;
         Background bckgrnd;
-        //Pipe pip;
         StartingFlag strtFlg;
         List<GameObject> lstObjsToDraw;
         List<GameObject> allObjects;
 
-        public Game1()
+        //BUGS:
+        //Collusion is not very great, problems while trying to jump on platforms and from platroms
+        public MrioGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -47,7 +48,7 @@ namespace EndlessMarioRebornGit
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            //bckgrnd = new Background(Content.Load<Texture2D>("background"), Content.Load<Texture2D>("background"), GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, allObjectsButMario);
+            bckgrnd = new Background(Content.Load<Texture2D>("background"), Content.Load<Texture2D>("background"), GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, allObjects);
             List<Texture2D> mrioFacingRightTextures = new List<Texture2D>();
             List<Texture2D> mrioFacingLeftTextures = new List<Texture2D>();
             foreach (string assetName in Mario.texturesNameFacingRight)
@@ -60,6 +61,10 @@ namespace EndlessMarioRebornGit
             }
             mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures);
             allObjects.Add(mrio);
+            Floor flr = new Floor(bckgrnd.GameWidth, bckgrnd.GameHeight);
+            allObjects.Add(flr);
+            Pipe pip = new Pipe(Content.Load<Texture2D>(Pipe.textureName), 100, 0.6f);
+            allObjects.Add(pip);
             lstObjsToDraw = new List<GameObject>();
             //Adds the objects in the ToDrawList to the allObjects list
             foreach (GameObject obj in lstObjsToDraw)
@@ -100,8 +105,10 @@ namespace EndlessMarioRebornGit
             {
                 mrio.Jump();
             }
-            mrio.Update();
-
+            mrio.UpdateFrameStart();
+            HandleAllCollusions();
+            mrio.UpdateFrameEnd();
+            bckgrnd.BackgroundUpate(mrio.SpeedX);
             base.Update(gameTime);
         }
 
@@ -113,9 +120,17 @@ namespace EndlessMarioRebornGit
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
+            Rectangle[] bkToDraw = bckgrnd.BackgroundLocToDraw();
+            spriteBatch.Draw(bckgrnd.BackgroundTextures[0], bkToDraw[0], Color.White);
+            spriteBatch.Draw(bckgrnd.BackgroundTextures[1], bkToDraw[1], Color.White);
             foreach (GameObject obj in allObjects)
             {
-                spriteBatch.Draw(obj.CurrentTexture, new Rectangle((int)obj.Loc.X, (int)obj.Loc.Y, obj.CurrentTexture.Width, obj.CurrentTexture.Height), Color.White);
+                if (obj is Floor)
+                {
+                    continue;
+                }
+                spriteBatch.Draw(obj.CurrentTexture, obj.Loc, null, Color.White, 0f, new Vector2(0, 0), obj.Scale, SpriteEffects.None, 0f);
+                //spriteBatch.Draw(obj.CurrentTexture, new Rectangle((int)obj.Loc.X, (int)obj.Loc.Y, obj.CurrentTexture.Width, obj.CurrentTexture.Height), Color.White, 0f, null, obj.Scale, SpriteEffects.None, 0);
             }
             //spriteBatch.Draw(mrio.CurrentTexture, new Rectangle((int)mrio.Loc.X, (int)mrio.Loc.Y, mrio.CurrentTexture.Width, mrio.CurrentTexture.Height), Color.White);
             // TODO: Add your drawing code here
@@ -124,36 +139,50 @@ namespace EndlessMarioRebornGit
             base.Draw(gameTime);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private GameObject isCollidingX(GameObject obj)
+        private void HandleAllCollusions()
         {
-            float objLeft = obj.Loc.X;
-            float objRight = obj.Loc.X + obj.CurrentTexture.Width;
-            float toCheckVsLeft = 0;
-            float toCheckVsRight = 0;
-            foreach (GameObject toCheckVs in allObjects)
+            //Now only works for mario
+            MovingObj checkOn = mrio;
+            foreach (GameObject other in allObjects)
             {
-                if (!obj.Equals(toCheckVs) && toCheckVs.IsCollideAble)
+                if (!checkOn.Equals(other))
                 {
-                    toCheckVsLeft = toCheckVs.Loc.X;
-                    toCheckVsRight = toCheckVs.Loc.X + obj.CurrentTexture.Width;
-                    //Moving right and colliding with that obj
-                    if (objRight > toCheckVsLeft && objLeft < toCheckVsRight)
-                    {
-                        return toCheckVs;
-                    }
-                    //Moving left and colliding with that obj
-                    if (objLeft < toCheckVsRight && objRight > toCheckVsLeft)
-                    {
-                        return toCheckVs;
-                    }
+                    other.Collusion(checkOn);
                 }
             }
-            return null;
         }
+
+        //private GameObject isCollidingX(MovingObj obj)
+        //{
+        //    float objLeft = obj.Loc.X;
+        //    float objRight = obj.Loc.X + obj.CurrentTexture.Width;
+        //    float toCheckVsLeft = 0;
+        //    float toCheckVsRight = 0;
+        //    foreach (GameObject toCheckVs in allObjects)
+        //    {
+        //        if (!obj.Equals(toCheckVs) && toCheckVs.IsCollideAble)
+        //        {
+        //            toCheckVsLeft = toCheckVs.Loc.X;
+        //            toCheckVsRight = toCheckVs.Loc.X + obj.CurrentTexture.Width;
+        //            //FOR A REASON, WORKS FOR GOING LEFT TOO
+        //            //BUGGGGGGGGGGGGGGGG
+        //            //Moving right and colliding with that obj
+        //            if ((obj.AccelerationX > 0) && (objRight > toCheckVsLeft && objLeft < toCheckVsRight))
+        //            {
+        //                return toCheckVs;
+        //            }
+        //            //Moving left and colliding with that obj
+        //            if ((obj.AccelerationX < 0) && (objLeft < toCheckVsRight && objRight > toCheckVsLeft))
+        //            {
+        //                return toCheckVs;
+        //            }
+        //        }
+        //    }
+        //    return null;
+        //}
+
+
+
+
     }
 }

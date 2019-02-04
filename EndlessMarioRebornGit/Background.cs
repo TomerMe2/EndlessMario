@@ -53,9 +53,16 @@ namespace EndlessMarioRebornGit
         /// <param name="marioSpeed"></param>
         public void BackgroundUpate(float marioSpeed)
         {
+            if (marioSpeed < -4)
+            {
+                string debug = "asldkjsl";
+            }
             foreach (GameObject obj in this.allObjectsButMario)
             {
-                obj.MoveOnX(-marioSpeed);
+                if (!(obj is Mario))
+                {
+                    obj.MoveOnX(-marioSpeed);
+                }
             }
             this.LocX[0] -= marioSpeed;
             this.LocX[1] -= marioSpeed;
@@ -90,5 +97,14 @@ namespace EndlessMarioRebornGit
             get { return this.bkgrndImages; }
         }
 
+        public int GameWidth
+        {
+            get { return gameWidth; }
+        }
+
+        public int GameHeight
+        {
+            get { return gameHeight; }
+        }
     }
 }

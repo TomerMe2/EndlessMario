@@ -11,8 +11,8 @@ namespace EndlessMarioRebornGit
 {
     class Mario : MovingObj
     {
-        //public static Vector2 MARIOSTARTLOC = new Vector2(350, 352); TRUE START LOC
-        public static Vector2 MARIOSTARTLOC = new Vector2(100, 200);
+        public static Vector2 MARIOSTARTLOC = new Vector2(350, Physics.FLOOR_LOC); //TRUE START LOC
+        //public static Vector2 MARIOSTARTLOC = new Vector2(250, Physics.FLOOR_LOC);
         private const float MARIOJUMPOWER = 17;
         private const float MARIOMAXNORMALSPEEDX = 4;
         private const float MARIOACCELERATIONX = 1;
@@ -20,29 +20,15 @@ namespace EndlessMarioRebornGit
         public static string[] texturesNameFacingRight = { "MarioStand", "MarioWalk1", "MarioWalk2", "MarioWalk3", "MarioJump" };
         public static string[] texturesNameFacingLeft = {"MarioStandFlip", "MarioWalk1Flip", "MarioWalk2Flip", "MarioWalk3Flip", "MarioJumpFlip" };
 
-        public Mario(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft) : base(texturesFacingRight, texturesFacingLeft, MARIOSTARTLOC, 1, true, MARIOACCELERATIONX,
-            MARIOJUMPOWER, MARIOMAXNORMALSPEEDX)
+        public Mario(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft) : base(texturesFacingRight, texturesFacingLeft, 
+            new Vector2(MARIOSTARTLOC.X, MARIOSTARTLOC.Y - texturesFacingLeft.ElementAt(0).Height*0.6f), 0.6f, true, MARIOACCELERATIONX, MARIOJUMPOWER, MARIOMAXNORMALSPEEDX)
         {
 
         }
 
-        //public virtual void Walk(Direction dir)
-        //{
-        //    if (dir == Direction.Left)
-        //    {
-
-        //    }
-        //    if (dir == Direction.Right)
-        //    {
-
-        //    }
-        //}
-
-        //public virtual void Jump()
-        //{
-
-        //}
-
-
+        protected override void UpdateSpeedEndOfFrame()
+        {
+            loc.Y = loc.Y + speedY;
+        }
     }
 }

@@ -8,12 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace EndlessMarioRebornGit
 {
-    public enum Direction
-    {
-        Left,
-        Right,
-        Rand
-    }
+
+    //Each round, firstly the speeds must update to the current round, and then the Update method is being called.
+    //If this ends up colliding with another obj, it's speed will handled accordinly in the Update method.
     abstract class MovingObj : GameObject
     {
         private const int FRAMES_BEFORE_CHANGING_TEXTURE = 6;
@@ -23,6 +20,7 @@ namespace EndlessMarioRebornGit
         protected bool isWalkingPrevFrame;
         protected bool isFlipped;
         protected bool isJumping;
+        protected bool isOnSarfuce;
         protected float accelerationX;
         protected float speedX;
         protected float accelerationY;
@@ -34,7 +32,7 @@ namespace EndlessMarioRebornGit
 
         private int jumpingCounter;
         //TODO: HANDLE CHANGING DIRECTIONS FOR THE TEXTURES DURING JUMPING
-        public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower, 
+        public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower,
             float jumpingPower, float maxSpeed) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
         {
             //Texture Laws:
@@ -47,6 +45,7 @@ namespace EndlessMarioRebornGit
             isWalkingPrevFrame = false;
             isFlipped = false;
             isJumping = false;
+            isOnSarfuce = false;
             accelerationX = 0;
             accelerationY = 0;
             speedX = 0;
@@ -59,26 +58,14 @@ namespace EndlessMarioRebornGit
             jumpingCounter = 0;
         }
 
-        public void Update()
+        public void UpdateFrameStart()
         {
             if (isWalking)
             {
                 HandleSpeedChangesInWalking();
-                if (!isJumping)  //if it's not jumping or falling
-                {
-                    HandleTextureChangesInWalking();
-                }
-                else   //it's jumping or falling, we need to check for change of direction
-                {
-                    HandleTextureFlipJumpingAndWalking();
-                }
             }
             else
             {
-                if (!isJumping)
-                {
-                    HandleIdleTexture(); //make the texture idle
-                }
                 if (speedX != 0)   //the object need to slow down because of friction
                 {
                     HandleNotWalkingSpeed();
@@ -89,17 +76,111 @@ namespace EndlessMarioRebornGit
                 //Need to handle speed changes in jumping and know where to land
                 HandleSpeedChangesInJumpOrFall();
             }
+            else
+            {
+                speedY = 0;
+            }
+
+        }
+
+        public void UpdateFrameEnd()
+        {
+            if (isWalking)
+            {
+                if (!isJumping)
+                {
+                    HandleTextureChangesInWalking();
+                }
+                else
+                {
+                    HandleTextureFlipJumpingAndWalking();
+                }
+            }
+            else
+            {
+                if (!isJumping)
+                {
+                    HandleIdleTexture(); //make the texture idle
+                }
+            }
+            if (!isOnSarfuce)
+            {
+                Fall();
+            }
             isWalkingPrevFrame = isWalking;
-            isWalking = false;   //prepare it for the next frame
+            //prepare it for the next frame
+            isWalking = false;
+            isOnSarfuce = false;
+            UpdateSpeedEndOfFrame();
+        }
+
+        //public void Update(GameObject collidingX, GameObject collidingY)
+        //{
+        //    if (isWalking)
+        //    {
+        //        if (collidingX == null)
+        //        {
+        //            HandleSpeedChangesInWalking();
+        //        }
+        //        else
+        //        {
+        //            HandleStuckWhileWalk(collidingX);
+        //        }
+        //        if (!isJumping)  //if it's not jumping or falling
+        //        {
+        //            HandleTextureChangesInWalking();
+        //        }
+        //        else   //it's jumping or falling, we need to check for change of direction
+        //        {
+        //            HandleTextureFlipJumpingAndWalking();
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (!isJumping)
+        //        {
+        //            HandleIdleTexture(); //make the texture idle
+        //        }
+        //        if (speedX != 0)   //the object need to slow down because of friction
+        //        {
+        //            HandleNotWalkingSpeed();
+        //        }
+        //    }
+        //    if (isJumping)  //Object is falling or jumping
+        //    {
+        //        //Need to handle speed changes in jumping and know where to land
+        //        HandleSpeedChangesInJumpOrFall();
+        //    }
+        //    isWalkingPrevFrame = isWalking;
+        //    isWalking = false;   //prepare it for the next frame
+            
+        //}
+
+        protected virtual void UpdateSpeedEndOfFrame()
+        {
             loc.X = loc.X + speedX;
             loc.Y = loc.Y + speedY;
+        }
+
+        private void HandleStuckWhileWalk(GameObject collideWith)
+        {
+            accelerationX = 0;
+            speedX = 0;
+            if (isFlipped)   //facing left
+            {
+                loc.X = collideWith.Loc.X + collideWith.CurrentTexture.Width;
+            }
+            else   //facing right
+            {
+                loc.X = collideWith.Loc.X - currentTexture.Width;
+            }
         }
 
         private void HandleTextureFlipJumpingAndWalking()
         {
             if (accelerationX > 0)
             {
-                if (!currentTexture.Equals(texturesFacingRight.ElementAt(texturesFacingRight.Count-1)))  //if it's not the correct texture
+                if (!currentTexture.Equals(texturesFacingRight.ElementAt(texturesFacingRight.Count - 1)))  //if it's not the correct texture
                 {
                     currentTexture = texturesFacingRight.ElementAt(texturesFacingRight.Count - 1);
                 }
@@ -112,17 +193,10 @@ namespace EndlessMarioRebornGit
                 }
             }
         }
+
         private void HandleSpeedChangesInJumpOrFall()
         {
             speedY = speedY + accelerationY;
-            //THE PROBLEM IS HERE, CUS HE WONT JUMP AGAIN
-            if (loc.Y > Physics.FLOOR_LOC && isJumping)  //impact with the floor
-            {
-                loc.Y = Physics.FLOOR_LOC;
-                speedY = 0;
-                accelerationY = 0;
-                isJumping = false;
-            }
         }
 
         /// <summary>
@@ -130,7 +204,7 @@ namespace EndlessMarioRebornGit
         /// </summary>
         private void HandleSpeedChangesInWalking()
         {
-            if ((isFlipped && speedX > -maxSpeed) ||(!isFlipped && speedX < maxSpeed))
+            if ((isFlipped && speedX > -maxSpeed) || (!isFlipped && speedX < maxSpeed))
             {
                 speedX = speedX + accelerationX;
                 if (isFlipped)  //facing left
@@ -249,7 +323,7 @@ namespace EndlessMarioRebornGit
                 currentTexture = texturesFacingRight.ElementAt(0);
             }
         }
-        
+
         /// <summary>
         /// Initiates jump 
         /// </summary>
@@ -264,7 +338,7 @@ namespace EndlessMarioRebornGit
                 }
                 isJumping = true;
                 accelerationY = Physics.GRAVITY;
-                speedY = - jumpingPower + accelerationY;
+                speedY = -jumpingPower + accelerationY;
                 UpdateTextureToJumpingFalling();   //Updating the textures
             }
         }
@@ -325,6 +399,47 @@ namespace EndlessMarioRebornGit
             isWalking = true;
         }
 
+        protected virtual void CollusionWithHardObj(GameObject other, Direction dir)
+        {
+            if (dir == Direction.Left || dir == Direction.Right)
+            {
+                //speedX = 0;
+                if (dir == Direction.Left)
+                {
+                    speedX = other.Left - this.Right;
+                }
+                else
+                {
+                    speedX = other.Right - this.Left;
+                }
+                accelerationX = 0;
+                isWalking = false;
+            }
+            else if (dir == Direction.Up)
+            {
+                isOnSarfuce = true;
+                speedY = other.Top - this.Bottom;
+                accelerationY = 0;
+                isJumping = false;
+            }
+            else  //dir == Direction.Down
+            {
+                speedY = other.Bottom - this.Top - Physics.GRAVITY;    //so it will be only other.Bottom - this.Top after we will add Physics.GRAVITY to it
+                accelerationY = Physics.GRAVITY;
+            }
+        }
+
+        protected override void HandleCollusion(Pipe other, Direction dir)
+        {
+            CollusionWithHardObj(other, dir);
+        }
+
+        protected override void HandleCollusion(Floor other, Direction dir)
+        {
+            //Direction is always Up
+            CollusionWithHardObj(other, dir);
+        }
+
         /// <summary>
         /// Flip the object
         /// Keeps the same texture, but makes it flipped
@@ -342,6 +457,21 @@ namespace EndlessMarioRebornGit
                 currentTexture = texturesFacingLeft.ElementAt(currIndex); //make the flip!
             }
             isFlipped = !isFlipped; //flip the flag
+        }
+
+        public float AccelerationX
+        {
+            get {return accelerationX; }
+        }
+
+        public float SpeedX
+        {
+            get { return speedX; }
+        }
+
+        public float SpeedY
+        {
+            get { return speedY; }
         }
     }
 }
