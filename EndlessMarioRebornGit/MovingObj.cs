@@ -30,8 +30,6 @@ namespace EndlessMarioRebornGit
         private float walkingPower;
         private int changingTextureCounter;
 
-        private int jumpingCounter;
-        //TODO: HANDLE CHANGING DIRECTIONS FOR THE TEXTURES DURING JUMPING
         public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower,
             float jumpingPower, float maxSpeed) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
         {
@@ -54,8 +52,6 @@ namespace EndlessMarioRebornGit
             this.jumpingPower = jumpingPower;
             this.walkingPower = walkingPower;
             changingTextureCounter = 0;
-
-            jumpingCounter = 0;
         }
 
         public void UpdateFrameStart()
@@ -114,66 +110,10 @@ namespace EndlessMarioRebornGit
             UpdateSpeedEndOfFrame();
         }
 
-        //public void Update(GameObject collidingX, GameObject collidingY)
-        //{
-        //    if (isWalking)
-        //    {
-        //        if (collidingX == null)
-        //        {
-        //            HandleSpeedChangesInWalking();
-        //        }
-        //        else
-        //        {
-        //            HandleStuckWhileWalk(collidingX);
-        //        }
-        //        if (!isJumping)  //if it's not jumping or falling
-        //        {
-        //            HandleTextureChangesInWalking();
-        //        }
-        //        else   //it's jumping or falling, we need to check for change of direction
-        //        {
-        //            HandleTextureFlipJumpingAndWalking();
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (!isJumping)
-        //        {
-        //            HandleIdleTexture(); //make the texture idle
-        //        }
-        //        if (speedX != 0)   //the object need to slow down because of friction
-        //        {
-        //            HandleNotWalkingSpeed();
-        //        }
-        //    }
-        //    if (isJumping)  //Object is falling or jumping
-        //    {
-        //        //Need to handle speed changes in jumping and know where to land
-        //        HandleSpeedChangesInJumpOrFall();
-        //    }
-        //    isWalkingPrevFrame = isWalking;
-        //    isWalking = false;   //prepare it for the next frame
-            
-        //}
-
         protected virtual void UpdateSpeedEndOfFrame()
         {
             loc.X = loc.X + speedX;
             loc.Y = loc.Y + speedY;
-        }
-
-        private void HandleStuckWhileWalk(GameObject collideWith)
-        {
-            accelerationX = 0;
-            speedX = 0;
-            if (isFlipped)   //facing left
-            {
-                loc.X = collideWith.Loc.X + collideWith.CurrentTexture.Width;
-            }
-            else   //facing right
-            {
-                loc.X = collideWith.Loc.X - currentTexture.Width;
-            }
         }
 
         private void HandleTextureFlipJumpingAndWalking()
@@ -331,11 +271,6 @@ namespace EndlessMarioRebornGit
         {
             if (!isJumping)   //if it's not jumping alraedy
             {
-                jumpingCounter++;
-                if (jumpingCounter > 1)
-                {
-                    string s = "debug";
-                }
                 isJumping = true;
                 accelerationY = Physics.GRAVITY;
                 speedY = -jumpingPower + accelerationY;

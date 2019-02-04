@@ -151,38 +151,5 @@ namespace EndlessMarioRebornGit
                 }
             }
         }
-
-        //private GameObject isCollidingX(MovingObj obj)
-        //{
-        //    float objLeft = obj.Loc.X;
-        //    float objRight = obj.Loc.X + obj.CurrentTexture.Width;
-        //    float toCheckVsLeft = 0;
-        //    float toCheckVsRight = 0;
-        //    foreach (GameObject toCheckVs in allObjects)
-        //    {
-        //        if (!obj.Equals(toCheckVs) && toCheckVs.IsCollideAble)
-        //        {
-        //            toCheckVsLeft = toCheckVs.Loc.X;
-        //            toCheckVsRight = toCheckVs.Loc.X + obj.CurrentTexture.Width;
-        //            //FOR A REASON, WORKS FOR GOING LEFT TOO
-        //            //BUGGGGGGGGGGGGGGGG
-        //            //Moving right and colliding with that obj
-        //            if ((obj.AccelerationX > 0) && (objRight > toCheckVsLeft && objLeft < toCheckVsRight))
-        //            {
-        //                return toCheckVs;
-        //            }
-        //            //Moving left and colliding with that obj
-        //            if ((obj.AccelerationX < 0) && (objLeft < toCheckVsRight && objRight > toCheckVsLeft))
-        //            {
-        //                return toCheckVs;
-        //            }
-        //        }
-        //    }
-        //    return null;
-        //}
-
-
-
-
     }
 }

@@ -96,6 +96,10 @@ namespace EndlessMarioRebornGit
         /// </summary>
         public Direction Collusion(MovingObj other)
         {
+            if (this is Floor)
+            {
+                string deb = "debug";
+            }
             //TODO: override it in MovingObj so this obj can have speed to!
             //other is checking if he is colliding me
             float otherTop = other.Top + other.SpeedY;
@@ -104,6 +108,12 @@ namespace EndlessMarioRebornGit
             float otherRight = other.Right + other.SpeedX;
             //if they are on the same height level
             if ((otherTop <= this.Top && otherBottom >= this.Bottom) || (this.Top <= otherTop && this.Bottom >= otherBottom))
+                //(otherBottom <= this.Bottom && otherBottom >= this.Top && otherTop <= this.Top))
+                //(otherBottom <= this.Bottom && otherTop >= this.Bottom) || (otherTop >= this.Top && otherBottom <= this.Top))
+                //(otherBottom <= this.Bottom && otherTop <= this.Top && otherBottom >= this.Top))
+                // || (!(this is Floor) && (otherTop <= this.Top && otherBottom >= this.Top) || (otherBottom >= this.Bottom && otherTop <= this.Bottom)))
+                //TODO: FIX THIS IF. THE LAST ROW WAS THE BEST ADDITION, BUT STILL BUGGY.
+                //MAYBE I SHOULD ADD A REFERENCE TO THE SARFUCE AND CHECK IF ITS NOT THE SRAFUCE ONLY
             {
                 if (otherRight >= this.Left && otherRight <= this.Right)
                 {
@@ -131,10 +141,12 @@ namespace EndlessMarioRebornGit
                     {
                         hasMeetPipe = true;
                     }
+                    //BUG: WHEN JUMPING AND COLLIDING PIPE FROM RIGHT IT'S COMING HERE. NEED TO CHECK WHY, CUS IT SHOULD GO TO Direction.Right!
                     other.HandleCollusion((dynamic)this, Direction.Up);
                     return Direction.Up;
                 }
             }
+
             if (this is Pipe && hasMeetPipe)
             {
                 string deb = "kajshdkjas";
