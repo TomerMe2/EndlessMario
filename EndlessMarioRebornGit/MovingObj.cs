@@ -29,9 +29,10 @@ namespace EndlessMarioRebornGit
         private float jumpingPower;
         private float walkingPower;
         private int changingTextureCounter;
-
+        private GameObject sarfuce;
+        private GameObject prevSarfuce; 
         public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower,
-            float jumpingPower, float maxSpeed) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
+            float jumpingPower, float maxSpeed, Floor flr) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
         {
             //Texture Laws:
             //First will come the statnding texture
@@ -52,10 +53,14 @@ namespace EndlessMarioRebornGit
             this.jumpingPower = jumpingPower;
             this.walkingPower = walkingPower;
             changingTextureCounter = 0;
+            sarfuce = flr;
+            prevSarfuce = flr;
         }
 
         public void UpdateFrameStart()
         {
+            prevSarfuce = sarfuce;
+            sarfuce = null;
             if (isWalking)
             {
                 HandleSpeedChangesInWalking();
@@ -336,6 +341,14 @@ namespace EndlessMarioRebornGit
 
         protected virtual void CollusionWithHardObj(GameObject other, Direction dir)
         {
+            if (dir == Direction.None)
+            {
+                return;
+            }
+            if (dir == Direction.Up)
+            {
+                sarfuce = other;
+            }
             if (dir == Direction.Left || dir == Direction.Right)
             {
                 //speedX = 0;
@@ -407,6 +420,16 @@ namespace EndlessMarioRebornGit
         public float SpeedY
         {
             get { return speedY; }
+        }
+
+        public GameObject Sarfuce
+        {
+            get { return sarfuce; }
+        }
+
+        public GameObject PrevSarfuce
+        {
+            get { return prevSarfuce; }
         }
     }
 }

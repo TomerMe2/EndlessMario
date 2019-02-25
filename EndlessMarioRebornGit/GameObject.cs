@@ -88,17 +88,59 @@ namespace EndlessMarioRebornGit
             //Direction is always Up
         }
 
+        private bool CheckCollusionRight(float otherLeft)
+        {
+            if (otherLeft <= this.Right && otherLeft >= this.Left)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool CheckCollusionLeft(float otherRight)
+        {
+            if (otherRight >= this.Left && otherRight <= this.Right)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool CheckCollusionUp(float otherBottom)
+        {
+            if (otherBottom >= this.Top && otherBottom <= this.Bottom)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private bool CheckCollusionBottom(float otherTop)
+        {
+            if (otherTop <= this.Bottom && otherTop >= this.Top)
+            {
+                return true;
+            }
+            return false;
+        }
+
+
         protected virtual void HandleCollusion(GameObject other, Direction dir) { }
 
         /// <summary>
         /// Returns the direction of other realative to this if there's a collusion. Returns Direction.None otherwise
-        /// Prefers left/right collusions over top/bottom collusions
+        /// Prefers left/right collusions over up/bottom collusions
         /// </summary>
         public Direction Collusion(MovingObj other)
         {
-            if (this is Floor)
+            //if (RectA.X1 < RectB.X2 && RectA.X2 > RectB.X1 && RectA.Y1 < RectB.Y2 && RectA.Y2 > RectB.Y1) 
+            if (Math.Abs(other.SpeedX) > 6)
             {
-                string deb = "debug";
+                string debug = "nini";
+            }
+            if (this is Floor && hasMeetPipe)
+            {
+                string debug = "ninini";
             }
             //TODO: override it in MovingObj so this obj can have speed to!
             //other is checking if he is colliding me
@@ -106,14 +148,135 @@ namespace EndlessMarioRebornGit
             float otherBottom = other.Bottom + other.SpeedY;
             float otherLeft = other.Left + other.SpeedX;
             float otherRight = other.Right + other.SpeedX;
+            Rectangle rc1, rc2;
+            if (!(this.Left <= otherRight && this.Right >= other.Left && this.Bottom >= otherTop && this.Top <= otherBottom))
+            {
+                //there's no collusion
+                return Direction.None;
+            }
+            if (this is Pipe)
+            {
+                string deb = "debug";
+            }
+            Direction dir = Direction.None;
+            if (CheckCollusionLeft(otherRight) && CheckCollusionRight(otherLeft))
+            {
+                //it's up or down
+                if (CheckCollusionUp(otherBottom))
+                {
+                    dir = Direction.Up;
+                }
+                if (CheckCollusionBottom(otherTop))
+                {
+                    dir = Direction.Down;
+                }
+            }
+            if (dir == Direction.None)
+            //if (CheckCollusionUp(otherBottom) && CheckCollusionBottom(otherTop))
+            {
+                if (CheckCollusionLeft(otherRight))
+                {
+                    dir = Direction.Left;
+                }
+                if (CheckCollusionRight(otherLeft))
+                {
+                    dir = Direction.Right;
+                }
+            }
+          
+
+            //if (CheckCollusionLeft(otherLeft))
+            //{
+            //    dir = Direction.Left;
+            //}
+            //if (CheckCollusionRight(otherRight))
+            //{
+            //    dir = Direction.Right;
+            //}
+            //if (CheckCollusionUp(otherBottom))
+            //{
+            //    dir = Direction.Up;
+            //}
+            //if (CheckCollusionBottom(otherTop))
+            //{
+            //    dir = Direction.Down;
+            //}
+            if (this is Pipe)
+            {
+                string debug = "nini";
+            }
+            other.HandleCollusion((dynamic)this, dir);
+            if (Math.Abs(other.SpeedY) > 0)
+            {
+                string deb = "deb";
+            }
+            if (Math.Abs(other.SpeedX) > 6)
+            {
+                string debug = "nini";
+            }
+            return dir;
+            ////if they are on the same height level
+            //if ((otherTop <= this.Top && otherBottom >= this.Bottom) || (this.Top <= otherTop && this.Bottom >= otherBottom) ||
+            //    (otherBottom <= this.Bottom && otherTop >= this.Bottom) || (otherTop >= this.Top && otherTop <= this.Bottom) ||
+            //  //  otherBottom >= this.Top && otherTop <= this.Top && otherBottom <= this.Bottom)
+            //   //(otherBottom <= this.Bottom && otherBottom >= this.Top && otherTop <= this.Top))
+            //    //(otherBottom <= this.Bottom && otherTop >= this.Bottom) || (otherTop >= this.Top && otherBottom <= this.Top))
+            //    //(otherBottom <= this.Bottom && otherTop <= this.Top && otherBottom >= this.Top))
+            //     //|| (other.PrevSarfuce != null && !(this.Equals(other.PrevSarfuce)) && (otherBottom < this.Bottom && otherBottom > this.Top))
+            //    // || (other.PrevSarfuce == null && otherBottom < this.Bottom && otherBottom > this.Top))
+            //    //TODO: FIX THIS IF. THE LAST ROW WAS THE BEST ADDITION, BUT STILL BUGGY.
+            //    //MAYBE I SHOULD ADD A REFERENCE TO THE SARFUCE AND CHECK IF ITS NOT THE SRAFUCE ONLY
+            //   // (otherBottom < this.Bottom && otherBottom > this.Top))
+            //{
+            //    if (otherRight >= this.Left && otherRight <= this.Right)
+            //    {
+            //        other.HandleCollusion((dynamic)this, Direction.Left);
+            //        return Direction.Left;
+            //    }
+            //    if (otherLeft <= this.Right && otherLeft >= this.Left)
+            //    {
+            //        other.HandleCollusion((dynamic)this, Direction.Right);
+            //        return Direction.Right;
+            //    }
+            //}
+            ////if they are on the same left/right area
+            //if ((otherRight <= this.Right && otherLeft >= this.Left) || (this.Right <= otherRight && this.Left >= otherLeft) ||
+            //    (otherLeft <= this.Left && otherRight >= this.Left) || (otherRight >= this.Right && otherLeft <= this.Right))
+            //{
+            //    if (otherTop <= this.Bottom && otherTop >= this.Top && CheckCollusionLeftRight(other) == Direction.None)
+            //    {
+            //        other.HandleCollusion((dynamic)this, Direction.Down);
+            //        return Direction.Down;
+            //    }
+            //    if (otherBottom >= this.Top && otherBottom <= this.Bottom && CheckCollusionLeftRight(other) == Direction.None)
+            //    {
+            //        if (this is Pipe)
+            //        {
+            //            hasMeetPipe = true;
+            //        }
+            //        //BUG: WHEN JUMPING AND COLLIDING PIPE FROM RIGHT IT'S COMING HERE. NEED TO CHECK WHY, CUS IT SHOULD GO TO Direction.Right!
+            //        other.HandleCollusion((dynamic)this, Direction.Up);
+            //        return Direction.Up;
+            //    }
+            //}
+            return Direction.None;
+        }
+
+        private Direction CheckCollusionLeftRight(MovingObj other)
+        {
+            float otherTop = other.Top + other.SpeedY;
+            float otherBottom = other.Bottom + other.SpeedY;
+            float otherLeft = other.Left + other.SpeedX;
+            float otherRight = other.Right + other.SpeedX;
             //if they are on the same height level
             if ((otherTop <= this.Top && otherBottom >= this.Bottom) || (this.Top <= otherTop && this.Bottom >= otherBottom))
-                //(otherBottom <= this.Bottom && otherBottom >= this.Top && otherTop <= this.Top))
-                //(otherBottom <= this.Bottom && otherTop >= this.Bottom) || (otherTop >= this.Top && otherBottom <= this.Top))
-                //(otherBottom <= this.Bottom && otherTop <= this.Top && otherBottom >= this.Top))
-                // || (!(this is Floor) && (otherTop <= this.Top && otherBottom >= this.Top) || (otherBottom >= this.Bottom && otherTop <= this.Bottom)))
-                //TODO: FIX THIS IF. THE LAST ROW WAS THE BEST ADDITION, BUT STILL BUGGY.
-                //MAYBE I SHOULD ADD A REFERENCE TO THE SARFUCE AND CHECK IF ITS NOT THE SRAFUCE ONLY
+            //(otherBottom <= this.Bottom && otherBottom >= this.Top && otherTop <= this.Top))
+            //(otherBottom <= this.Bottom && otherTop >= this.Bottom) || (otherTop >= this.Top && otherBottom <= this.Top))
+            //(otherBottom <= this.Bottom && otherTop <= this.Top && otherBottom >= this.Top))
+            // || (!(this is Floor) && (otherTop <= this.Top && otherBottom >= this.Top) || (otherBottom >= this.Bottom && otherTop <= this.Bottom)))
+            //TODO: FIX THIS IF. THE LAST ROW WAS THE BEST ADDITION, BUT STILL BUGGY.
+            //MAYBE I SHOULD ADD A REFERENCE TO THE SARFUCE AND CHECK IF ITS NOT THE SRAFUCE ONLY
+            // (otherBottom < this.Bottom && otherBottom > this.Top))
             {
                 if (otherRight >= this.Left && otherRight <= this.Right)
                 {
@@ -126,33 +289,7 @@ namespace EndlessMarioRebornGit
                     return Direction.Right;
                 }
             }
-            //if they are on the same left/right area
-            if ((otherRight <= this.Right && otherLeft >= this.Left) || (this.Right <= otherRight && this.Left >= otherLeft) ||
-                (otherLeft <= this.Left && otherRight >= this.Left) || (otherRight >= this.Right && otherLeft <= this.Right))
-            {
-                if (otherTop <= this.Bottom && otherTop >= this.Top)
-                {
-                    other.HandleCollusion((dynamic)this, Direction.Down);
-                    return Direction.Down;
-                }
-                if (otherBottom >= this.Top && otherBottom <= this.Bottom)
-                {
-                    if (this is Pipe)
-                    {
-                        hasMeetPipe = true;
-                    }
-                    //BUG: WHEN JUMPING AND COLLIDING PIPE FROM RIGHT IT'S COMING HERE. NEED TO CHECK WHY, CUS IT SHOULD GO TO Direction.Right!
-                    other.HandleCollusion((dynamic)this, Direction.Up);
-                    return Direction.Up;
-                }
-            }
-
-            if (this is Pipe && hasMeetPipe)
-            {
-                string deb = "kajshdkjas";
-            }
             return Direction.None;
-
         }
     }
 }

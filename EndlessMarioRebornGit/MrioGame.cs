@@ -59,9 +59,9 @@ namespace EndlessMarioRebornGit
             {
                 mrioFacingLeftTextures.Add(Content.Load<Texture2D>(@"Mario\" + assetName));
             }
-            mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures);
-            allObjects.Add(mrio);
             Floor flr = new Floor(bckgrnd.GameWidth, bckgrnd.GameHeight);
+            mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures, flr);
+            allObjects.Add(mrio);
             allObjects.Add(flr);
             Pipe pip = new Pipe(Content.Load<Texture2D>(Pipe.textureName), 100, 0.6f);
             allObjects.Add(pip);
