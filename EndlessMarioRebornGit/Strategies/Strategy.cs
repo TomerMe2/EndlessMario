@@ -19,7 +19,11 @@ namespace EndlessMarioRebornGit.Strategies
         //Returns the current commands and clear the list
         public virtual List<Command> GetCommands()
         {
-            return cmnds.Dequeue();
+            if (cmnds.Count > 0)
+            {
+                return cmnds.Dequeue();
+            }
+            return new List<Command>();
         }
 
         protected void AddToCommands(List<Command> cmndsLst)

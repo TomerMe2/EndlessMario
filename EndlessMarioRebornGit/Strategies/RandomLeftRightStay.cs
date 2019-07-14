@@ -16,6 +16,7 @@ namespace EndlessMarioRebornGit.Strategies
         public RandomLeftRightStay()
         {
             rnd = new Random();
+            prevCount = 0;
         }
 
         /// <summary>
@@ -25,7 +26,7 @@ namespace EndlessMarioRebornGit.Strategies
         public override List<Command> GetCommands()
         {
             prevCount--;
-            if (prevCount == 0)
+            if (prevCount < 0)
             {
                 double rndDub = rnd.NextDouble();
                 if (rndDub < 0.3)
