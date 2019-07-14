@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using EndlessMarioRebornGit.Strategies;
 
 namespace EndlessMarioRebornGit
 {
@@ -20,8 +21,8 @@ namespace EndlessMarioRebornGit
         public static string[] texturesNameFacingRight = { "MarioStand", "MarioWalk1", "MarioWalk2", "MarioWalk3", "MarioJump" };
         public static string[] texturesNameFacingLeft = {"MarioStandFlip", "MarioWalk1Flip", "MarioWalk2Flip", "MarioWalk3Flip", "MarioJumpFlip" };
 
-        public Mario(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Floor flr) : base(texturesFacingRight, texturesFacingLeft, 
-            new Vector2(MARIOSTARTLOC.X, MARIOSTARTLOC.Y - texturesFacingLeft.ElementAt(0).Height*0.6f), 0.6f, true, MARIOACCELERATIONX, MARIOJUMPOWER, MARIOMAXNORMALSPEEDX, flr)
+        public Mario(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Floor flr, Strategy strtgy) : base(texturesFacingRight, texturesFacingLeft, 
+            new Vector2(MARIOSTARTLOC.X, MARIOSTARTLOC.Y - texturesFacingLeft.ElementAt(0).Height*0.6f), 0.6f, true, MARIOACCELERATIONX, MARIOJUMPOWER, MARIOMAXNORMALSPEEDX, flr, strtgy)
         {
 
         }

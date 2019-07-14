@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using EndlessMarioRebornGit.Strategies;
+using EndlessMarioRebornGit.Commands;
 
 namespace EndlessMarioRebornGit
 {
@@ -32,9 +34,11 @@ namespace EndlessMarioRebornGit
         private List<GameObject> collidedWithPrevTurn;
         private List<GameObject> collidesWithNow;
         private GameObject sarfuce;
-        private GameObject prevSarfuce; 
+        private GameObject prevSarfuce;
+        private Strategy strtgy;
+
         public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower,
-            float jumpingPower, float maxSpeed, Floor flr) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
+            float jumpingPower, float maxSpeed, Floor flr, Strategy strtgy) : base(startLoc, texturesFacingRight.ElementAt(0), scale, isCollideAble)
         {
             //Texture Laws:
             //First will come the statnding texture
@@ -59,10 +63,21 @@ namespace EndlessMarioRebornGit
             prevSarfuce = flr;
             collidedWithPrevTurn = new List<GameObject>();
             collidesWithNow = new List<GameObject>();
+            this.strtgy = strtgy;
         }
 
         public void UpdateFrameStart()
         {
+            //first, handle move strategy
+            if (this is Goomba)
+            {
+                bool deb = true;
+            }
+            List<Command> cmnds = strtgy.GetCommands();
+            foreach (Command cmnd in cmnds)
+            {
+                HandleCommand(cmnd);
+            }
             prevSarfuce = sarfuce;
             sarfuce = null;
             collidedWithPrevTurn = collidesWithNow;
@@ -265,20 +280,13 @@ namespace EndlessMarioRebornGit
         /// </summary>
         private void HandleIdleTexture()
         {
-            if (isFlipped)
-            {
-                currentTexture = texturesFacingLeft.ElementAt(0);
-            }
-            else
-            {
-                currentTexture = texturesFacingRight.ElementAt(0);
-            }
+            currentTexture = isFlipped ? texturesFacingLeft.ElementAt(0) : texturesFacingRight.ElementAt(0);
         }
 
         /// <summary>
         /// Initiates jump 
         /// </summary>
-        public virtual void Jump()
+        protected virtual void Jump()
         {
             if (!isJumping)   //if it's not jumping alraedy
             {
@@ -308,17 +316,36 @@ namespace EndlessMarioRebornGit
         /// </summary>
         private void UpdateTextureToJumpingFalling()
         {
-            if (isFlipped)
-            {
-                currentTexture = texturesFacingLeft.ElementAt(texturesFacingLeft.Count - 1);
-            }
-            else
-            {
-                currentTexture = texturesFacingRight.ElementAt(texturesFacingLeft.Count - 1);
-            }
+            currentTexture = isFlipped ? texturesFacingLeft.ElementAt(texturesFacingLeft.Count - 1) : texturesFacingRight.ElementAt(texturesFacingLeft.Count - 1);
         }
 
-        public virtual void Walk(Direction dir)
+        /// <summary>
+        /// Switches between different kinds of commands 
+        /// </summary>
+        /// <param name="cmnd"></param>
+        protected void HandleCommand(Command cmnd)
+        {
+            HandleCommand((dynamic) cmnd);
+        }
+
+        protected void HandleCommand(MoveLeftCommand lftCmnd)
+        {
+            Walk(Direction.Left);
+        }
+
+        protected void HandleCommand(MoveRightCommand rightCmnd)
+        {
+            Walk(Direction.Right);
+        }
+
+        protected void HandleCommand(JumpCommand jmpCmnd)
+        {
+            Jump();
+        }
+
+
+
+        protected virtual void Walk(Direction dir)
         {
             bool isChangingDir = (dir == Direction.Left && !isFlipped) || (dir == Direction.Right && isFlipped);
             if ((!isWalkingPrevFrame) || (isWalkingPrevFrame && isChangingDir))

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-
+using EndlessMarioRebornGit.Strategies;
 namespace EndlessMarioRebornGit
 {
     /// <summary>
@@ -13,6 +13,7 @@ namespace EndlessMarioRebornGit
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Mario mrio;
+        UserMarioMovingStrategy mrioStrategy;
         Background bckgrnd;
         StartingFlag strtFlg;
         List<GameObject> lstObjsToDraw;
@@ -60,12 +61,29 @@ namespace EndlessMarioRebornGit
                 mrioFacingLeftTextures.Add(Content.Load<Texture2D>(@"Mario\" + assetName));
             }
             Floor flr = new Floor(bckgrnd.GameWidth, bckgrnd.GameHeight);
-            mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures, flr);
+            mrioStrategy = new UserMarioMovingStrategy();
+            mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures, flr, mrioStrategy);
             allObjects.Add(mrio);
             allObjects.Add(flr);
             Pipe pip = new Pipe(Content.Load<Texture2D>(Pipe.textureName), 800, 0.7f);
             allObjects.Add(pip);
+
+            List<Texture2D> gmbaFacingRightTextures = new List<Texture2D>();
+            List<Texture2D> gmbaFacingLeftTextures = new List<Texture2D>();
+            foreach (string assetName in Goomba.texturesNameFacingRight)
+            {
+                gmbaFacingRightTextures.Add(Content.Load<Texture2D>(@"Goomba\" + assetName));
+            }
+            foreach (string assetName in Goomba.texturesNameFacingLeft)
+            {
+                gmbaFacingLeftTextures.Add(Content.Load<Texture2D>(@"Goomba\" + assetName));
+            }
+            Goomba gmba = new Goomba(gmbaFacingRightTextures, gmbaFacingRightTextures, flr, 500, new RandomLeftRightStay());
+            allObjects.Add(gmba);
+
             lstObjsToDraw = new List<GameObject>();
+
+
             //Adds the objects in the ToDrawList to the allObjects list
             foreach (GameObject obj in lstObjsToDraw)
             {
@@ -95,26 +113,39 @@ namespace EndlessMarioRebornGit
                 Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                mrio.Walk(Direction.Right);
+                mrioStrategy.RightArrowClicked();
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                mrio.Walk(Direction.Left);
+                mrioStrategy.LeftArrowClicked();
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                mrio.Jump();
+                mrioStrategy.SpaceClicked();
             }
             GameObject newObj = GameObjsCreator.Create((Pipe)allObjects[2], this);
             if (newObj != null)
             {
                 allObjects.Add(newObj);
             }
-            mrio.UpdateFrameStart();
+            foreach (GameObject gmObj in allObjects)
+            {
+                if (gmObj is MovingObj)
+                {
+                    ((MovingObj)gmObj).UpdateFrameStart();
+                }
+            }
+            //mrio.UpdateFrameStart();
             HandleAllCollusions();
-            mrio.UpdateFrameEnd();
+            //mrio.UpdateFrameEnd();
+            foreach (GameObject gmObj in allObjects)
+            {
+                if (gmObj is MovingObj)
+                {
+                    ((MovingObj)gmObj).UpdateFrameEnd();
+                }
+            }
             bckgrnd.BackgroundUpate(mrio.SpeedX);
-            
             base.Update(gameTime);
         }
 
@@ -147,13 +178,18 @@ namespace EndlessMarioRebornGit
 
         private void HandleAllCollusions()
         {
-            //Now only works for mario
-            MovingObj checkOn = mrio;
-            foreach (GameObject other in allObjects)
+            foreach (GameObject checkOn in allObjects)
             {
-                if (!checkOn.Equals(other))
+                if(!(checkOn is MovingObj))
                 {
-                    other.Collusion(checkOn);
+                    continue;
+                }
+                foreach (GameObject other in allObjects)
+                {
+                    if (!checkOn.Equals(other))
+                    {
+                        other.Collusion((MovingObj)checkOn);
+                    }
                 }
             }
         }
