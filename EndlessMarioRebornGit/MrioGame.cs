@@ -63,7 +63,7 @@ namespace EndlessMarioRebornGit
             mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures, flr);
             allObjects.Add(mrio);
             allObjects.Add(flr);
-            Pipe pip = new Pipe(Content.Load<Texture2D>(Pipe.textureName), 100, 0.6f);
+            Pipe pip = new Pipe(Content.Load<Texture2D>(Pipe.textureName), 800, 0.7f);
             allObjects.Add(pip);
             lstObjsToDraw = new List<GameObject>();
             //Adds the objects in the ToDrawList to the allObjects list
@@ -105,10 +105,16 @@ namespace EndlessMarioRebornGit
             {
                 mrio.Jump();
             }
+            GameObject newObj = GameObjsCreator.Create((Pipe)allObjects[2], this);
+            if (newObj != null)
+            {
+                allObjects.Add(newObj);
+            }
             mrio.UpdateFrameStart();
             HandleAllCollusions();
             mrio.UpdateFrameEnd();
             bckgrnd.BackgroundUpate(mrio.SpeedX);
+            
             base.Update(gameTime);
         }
 

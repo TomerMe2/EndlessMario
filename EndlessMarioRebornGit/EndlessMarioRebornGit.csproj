@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Background.cs" />
     <Compile Include="Floor.cs" />
+    <Compile Include="GameObjsCreator.cs" />
     <Compile Include="MrioGame.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Mario.cs" />

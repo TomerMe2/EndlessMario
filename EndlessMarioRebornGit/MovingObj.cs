@@ -29,6 +29,8 @@ namespace EndlessMarioRebornGit
         private float jumpingPower;
         private float walkingPower;
         private int changingTextureCounter;
+        private List<GameObject> collidedWithPrevTurn;
+        private List<GameObject> collidesWithNow;
         private GameObject sarfuce;
         private GameObject prevSarfuce; 
         public MovingObj(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower,
@@ -55,12 +57,16 @@ namespace EndlessMarioRebornGit
             changingTextureCounter = 0;
             sarfuce = flr;
             prevSarfuce = flr;
+            collidedWithPrevTurn = new List<GameObject>();
+            collidesWithNow = new List<GameObject>();
         }
 
         public void UpdateFrameStart()
         {
             prevSarfuce = sarfuce;
             sarfuce = null;
+            collidedWithPrevTurn = collidesWithNow;
+            collidesWithNow = new List<GameObject>();
             if (isWalking)
             {
                 HandleSpeedChangesInWalking();
@@ -339,53 +345,89 @@ namespace EndlessMarioRebornGit
             isWalking = true;
         }
 
-        protected virtual void CollusionWithHardObj(GameObject other, Direction dir)
+        protected virtual void CollusionWithHardObj(GameObject other, List<Direction> dirs)
         {
-            if (dir == Direction.None)
+            if (dirs.Count == 0)
             {
                 return;
             }
-            if (dir == Direction.Up)
+            if (isJumping)
+            {
+                string deb = "deb";
+            }
+            if (dirs.Contains(Direction.Up) && dirs.Contains(Direction.Left))
+            {
+                string deb = "deb";
+            }
+            collidesWithNow.Add(other);
+            if (dirs.Count > 1 && dirs[0] != Direction.Up && dirs.Contains(Direction.Up))
             {
                 sarfuce = other;
             }
-            if (dir == Direction.Left || dir == Direction.Right)
+            else if (dirs.Contains(Direction.Up) && dirs.Count < 2)
+            {
+                //contains only Up actually
+                sarfuce = other;
+            }
+            else if (dirs.Contains(Direction.Left) || dirs.Contains(Direction.Right))
             {
                 //speedX = 0;
-                if (dir == Direction.Left)
+                if (dirs.Contains(Direction.Left))
                 {
-                    speedX = other.Left - this.Right;
+                    if (isJumping)
+                    {
+                        accelerationX = 0;
+                    }
+                    if (speedX > 0)
+                    {
+                        speedX = other.Left - this.Right;
+                    }
+                    else
+                    {
+                        loc.X = other.Left - (this.Right - this.Left);
+                    }
                 }
                 else
                 {
-                    speedX = other.Right - this.Left;
+                    if (isJumping)
+                    {
+                        accelerationX = 0;
+                    }
+                    if (speedX < 0)
+                    {
+                        speedX = other.Right - this.Left;
+                    }
+                    else
+                    {
+                        loc.X = other.Right;
+                    }
                 }
                 accelerationX = 0;
                 isWalking = false;
             }
-            else if (dir == Direction.Up)
+            if ((dirs.Contains(Direction.Up) && dirs.Count < 2) || (dirs[0] != Direction.Up && dirs.Contains(Direction.Up)))
             {
                 isOnSarfuce = true;
                 speedY = other.Top - this.Bottom;
                 accelerationY = 0;
                 isJumping = false;
             }
-            else  //dir == Direction.Down
+            if (dirs.Contains(Direction.Down))
             {
                 speedY = other.Bottom - this.Top - Physics.GRAVITY;    //so it will be only other.Bottom - this.Top after we will add Physics.GRAVITY to it
                 accelerationY = Physics.GRAVITY;
             }
         }
 
-        protected override void HandleCollusion(Pipe other, Direction dir)
+        protected override void HandleCollusion(Pipe other, List<Direction> dirs)
         {
-            CollusionWithHardObj(other, dir);
+            CollusionWithHardObj(other, dirs);
         }
 
-        protected override void HandleCollusion(Floor other, Direction dir)
+        protected override void HandleCollusion(Floor other, List<Direction> dirs)
         {
             //Direction is always Up
-            CollusionWithHardObj(other, dir);
+            CollusionWithHardObj(other, dirs);
         }
 
         /// <summary>
@@ -407,6 +449,10 @@ namespace EndlessMarioRebornGit
             isFlipped = !isFlipped; //flip the flag
         }
 
+        public bool HasCollidedWithPrevTurn(GameObject other)
+        {
+            return (collidedWithPrevTurn.Contains(other));
+        }
         public float AccelerationX
         {
             get {return accelerationX; }
