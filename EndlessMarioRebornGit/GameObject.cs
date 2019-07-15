@@ -15,6 +15,8 @@ namespace EndlessMarioRebornGit
         protected Texture2D currentTexture;
         protected float scale;
         protected bool isCollideAble;
+        protected bool isNeedDisposal;
+        protected bool needToBeDraw;
 
         private bool hasMeetPipe = false;
 
@@ -24,6 +26,8 @@ namespace EndlessMarioRebornGit
             this.currentTexture = texture;
             this.scale = scale;
             this.isCollideAble = isCollideAble;
+            isNeedDisposal = false;
+            needToBeDraw = true; 
         }
 
         public GameObject(Vector2 loc, float scale, bool isCollideAble)
@@ -39,6 +43,18 @@ namespace EndlessMarioRebornGit
             get { return loc; }
             set { loc = value; }
         }
+
+        public bool NeedToBeDraw
+        {
+            get { return needToBeDraw; }
+        }
+
+        public virtual bool IsNeedDisposal
+        {
+            get { return isNeedDisposal; }
+            private set { isNeedDisposal = value; }
+        }
+
         virtual public Texture2D CurrentTexture
         {
             get { return this.currentTexture; }
@@ -97,46 +113,29 @@ namespace EndlessMarioRebornGit
 
         private bool CheckCollusionRight(float otherLeft)
         {
-            if (otherLeft <= this.Right && otherLeft >= this.Left)
-            {
-                return true;
-            }
-            return false;
+            return (otherLeft <= this.Right && otherLeft >= this.Left);
+
         }
 
         private bool CheckCollusionLeft(float otherRight)
         {
-            if (otherRight >= this.Left && otherRight <= this.Right)
-            {
-                return true;
-            }
-            return false;
+            return (otherRight >= this.Left && otherRight <= this.Right);
         }
 
         private bool CheckCollusionUp(float otherBottom)
         {
-            if (otherBottom >= this.Top && otherBottom <= this.Bottom)
-            {
-                return true;
-            }
-            return false;
+            return (otherBottom >= this.Top && otherBottom <= this.Bottom);
         }
 
         private bool CheckCollusionBottom(float otherTop)
         {
-            if (otherTop <= this.Bottom && otherTop >= this.Top)
-            {
-                return true;
-            }
-            return false;
+            return (otherTop <= this.Bottom && otherTop >= this.Top);
         }
 
 
 
         protected List<Direction> ProtectedCollusion(MovingObj other, float thisLeft, float thisRight, float thisTop, float thisBottom)
         {
-            //TODO: override it in MovingObj so this obj can have speed to!
-            //other is checking if he is colliding me
             float otherTop = other.Top + other.SpeedY;
             float otherBottom = other.Bottom + other.SpeedY;
             float otherLeft = other.Left + other.SpeedX;
@@ -147,7 +146,15 @@ namespace EndlessMarioRebornGit
                 //there's no collusion
                 return dirs;
             }
-            //TODO: override it in MovingObj so this obj can have speed to!
+            if (this is Floor)
+            {
+                if (otherBottom >= thisTop)
+                {
+                    dirs.Add(Direction.Up);
+                    other.HandleCollusion((dynamic)this, dirs);
+                }
+                return dirs;
+            }
             //other is checking if he is colliding me
             //check collusion from right
             if (thisRight > otherLeft && thisLeft <= otherLeft)

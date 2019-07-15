@@ -42,12 +42,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Background.cs" />
+    <Compile Include="BlackScreen.cs" />
     <Compile Include="Floor.cs" />
     <Compile Include="GameObjsCreator.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\JumpCommand.cs" />
     <Compile Include="Commands\MoveLeftCommand.cs" />
     <Compile Include="Commands\MoveRightCommand.cs" />
+    <Compile Include="Heart.cs" />
     <Compile Include="Monsters\Goomba.cs" />
     <Compile Include="Monsters\Monster.cs" />
     <Compile Include="Strategies\RandomLeftRightStay.cs" />
@@ -77,6 +79,7 @@
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.manifest" />
+    <None Include="Fonts\8-BIT WONDER.TTF" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

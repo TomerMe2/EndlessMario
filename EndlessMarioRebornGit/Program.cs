@@ -8,14 +8,25 @@ namespace EndlessMarioRebornGit
     /// </summary>
     public static class Program
     {
+        private static bool shouldRestart;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            using (var game = new MrioGame())
-                game.Run();
+            shouldRestart = true;
+            while (shouldRestart)
+            {
+                shouldRestart = false;
+                using (var game = new MrioGame())
+                    game.Run();
+            }
+        }
+
+        public static void PrepareForRestart()
+        {
+            shouldRestart = true;
         }
     }
 #endif

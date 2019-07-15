@@ -18,16 +18,22 @@ namespace EndlessMarioRebornGit
         UserMarioMovingStrategy mrioStrategy;
         Background bckgrnd;
         StartingFlag strtFlg;
-        List<GameObject> lstObjsToDraw;
         List<GameObject> allObjects;
+        BlackScreen blkScrn;
+        bool isInPause;
+        bool isEscpWasPressed;
+        SpriteFont fntForPauseOrDeath;
+        private GameObjsCreator crtr;
 
-        //BUGS:
-        //Collusion is not very great, problems while trying to jump on platforms and from platroms
+        int count = 0;
+
         public MrioGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             allObjects = new List<GameObject>();
+            isInPause = false;
+            isEscpWasPressed = false;
         }
 
         /// <summary>
@@ -51,6 +57,9 @@ namespace EndlessMarioRebornGit
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            fntForPauseOrDeath = Content.Load<SpriteFont>("FntForPauseOrDeath");
+            blkScrn = new BlackScreen(Content.Load<Texture2D>(BlackScreen.textureName));
+            blkScrn.Hide();
             bckgrnd = new Background(Content.Load<Texture2D>("background"), Content.Load<Texture2D>("background"), GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, allObjects);
             List<Texture2D> mrioFacingRightTextures = new List<Texture2D>();
             List<Texture2D> mrioFacingLeftTextures = new List<Texture2D>();
@@ -63,13 +72,23 @@ namespace EndlessMarioRebornGit
                 mrioFacingLeftTextures.Add(Content.Load<Texture2D>(@"Mario\" + assetName));
             }
             Floor flr = new Floor(bckgrnd.GameWidth, bckgrnd.GameHeight);
+            Texture2D hrtTexture = Content.Load<Texture2D>(Heart.textureName);
+            List<Heart> hrts = new List<Heart>();
+            hrts.Add(new Heart(hrtTexture, 10));
+            hrts.Add(new Heart(hrtTexture, hrts[0].Right + 5));
+            hrts.Add(new Heart(hrtTexture, hrts[1].Right + 5));
             mrioStrategy = new UserMarioMovingStrategy();
-            mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures, flr, mrioStrategy);
+            mrio = new Mario(mrioFacingRightTextures, mrioFacingLeftTextures, flr, mrioStrategy, hrts);
             allObjects.Add(mrio);
             allObjects.Add(flr);
+            
             Pipe pip = new Pipe(Content.Load<Texture2D>(Pipe.textureName), 800, 0.7f);
             allObjects.Add(pip);
 
+            foreach (Heart hrt in hrts)
+            {
+                allObjects.Add(hrt);
+            }
             List<Texture2D> gmbaFacingRightTextures = new List<Texture2D>();
             List<Texture2D> gmbaFacingLeftTextures = new List<Texture2D>();
             foreach (string assetName in Goomba.texturesNameFacingRight)
@@ -80,19 +99,13 @@ namespace EndlessMarioRebornGit
             {
                 gmbaFacingLeftTextures.Add(Content.Load<Texture2D>(@"Goomba\" + assetName));
             }
-            Goomba gmba = new Goomba(gmbaFacingRightTextures, gmbaFacingLeftTextures, flr, 500, new RandomLeftRightStay());
+            Texture2D gmbaDeadTxtr = Content.Load<Texture2D>(@"Goomba\" + Goomba.deadTextureNm);
+            Texture2D gmbaDeadTxtrFlipped = Content.Load<Texture2D>(@"Goomba\" + Goomba.deadTextureFlippedNm);
+            Goomba gmba = new Goomba(gmbaFacingRightTextures, gmbaFacingLeftTextures, flr, 500, new RandomLeftRightStay(), gmbaDeadTxtr, gmbaDeadTxtrFlipped, mrio.Points);
             allObjects.Add(gmba);
 
-            lstObjsToDraw = new List<GameObject>();
-
-
-            //Adds the objects in the ToDrawList to the allObjects list
-            foreach (GameObject obj in lstObjsToDraw)
-            {
-                allObjects.Add(obj);
-            }
-
-            // TODO: use this.Content to load your game content here
+            crtr = new GameObjsCreator(pip, flr, this, mrio);
+            allObjects.Add(blkScrn);
         }
 
         /// <summary>
@@ -104,6 +117,23 @@ namespace EndlessMarioRebornGit
             // TODO: Unload any non ContentManager content here
         }
 
+        private void PauseOrUnpause()
+        {
+            isInPause = !isInPause;
+            int indxOfBlackScreen = -1;
+            for (int i = 0; i < allObjects.Count; i++)
+            {
+                if (allObjects[i] is BlackScreen)
+                {
+                    indxOfBlackScreen = i;
+                    break;
+                }
+            }
+            allObjects[indxOfBlackScreen] = allObjects[allObjects.Count - 1];
+            allObjects[allObjects.Count - 1] = blkScrn;
+            blkScrn.HideOrShow();
+        }
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -111,46 +141,71 @@ namespace EndlessMarioRebornGit
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            count++;
+            if (mrio.HasLost && isInPause && Keyboard.GetState().IsKeyDown(Keys.C))
+            {
+                Program.PrepareForRestart();
                 Exit();
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                //mrioStrategy.RightArrowClicked();
-                mrio.Walk(Direction.Right);
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            if ((GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) && !mrio.HasLost)
             {
-                //mrioStrategy.LeftArrowClicked();
-                mrio.Walk(Direction.Left);
+                isEscpWasPressed = true;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (isEscpWasPressed && Keyboard.GetState().IsKeyUp(Keys.Escape) && !mrio.HasLost)
             {
-                //mrioStrategy.SpaceClicked();
-                mrio.Jump();
+                isEscpWasPressed = false;
+                PauseOrUnpause();
             }
-            GameObject newObj = GameObjsCreator.Create((Pipe)allObjects[2], this);
-            if (newObj != null)
+            if (!isInPause)
             {
-                allObjects.Add(newObj);
-            }
-            foreach (GameObject gmObj in allObjects)
-            {
-                if (gmObj is MovingObj)
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
-                    ((MovingObj)gmObj).UpdateFrameStart();
+                    mrio.Walk(Direction.Right);
                 }
-            }
-            //mrio.UpdateFrameStart();
-            HandleAllCollusions();
-            //mrio.UpdateFrameEnd();
-            foreach (GameObject gmObj in allObjects)
-            {
-                if (gmObj is MovingObj)
+                else if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
-                    ((MovingObj)gmObj).UpdateFrameEnd();
+                    mrio.Walk(Direction.Left);
                 }
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                {
+                    mrio.Jump();
+                }
+                GameObject newObj = crtr.Create();
+                if (newObj != null)
+                {
+                    allObjects.Add(newObj);
+                }
+                foreach (GameObject gmObj in allObjects)
+                {
+                    if (gmObj is MovingObj)
+                    {
+                        ((MovingObj)gmObj).UpdateFrameStart();
+                    }
+                }
+                for (int i = 0; i < allObjects.Count; i++)
+                {
+                    GameObject curr = allObjects[i];
+                    if (curr.IsNeedDisposal)
+                    {
+                        //At this case, we will remove the object from the list
+                        allObjects.RemoveAt(i);
+                        i--;
+                    }
+                }
+                HandleAllCollusions();
+                foreach (GameObject gmObj in allObjects)
+                {
+                    if (gmObj is MovingObj)
+                    {
+                        ((MovingObj)gmObj).UpdateFrameEnd();
+                    }
+                }
+                if (mrio.HasLost)
+                {
+                    PauseOrUnpause();
+                }
+                bckgrnd.BackgroundUpate(mrio.SpeedX);
             }
-            bckgrnd.BackgroundUpate(mrio.SpeedX);
             base.Update(gameTime);
         }
 
@@ -160,23 +215,48 @@ namespace EndlessMarioRebornGit
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            Heart hrt = null;
             GraphicsDevice.Clear(Color.CornflowerBlue);
             spriteBatch.Begin();
             Rectangle[] bkToDraw = bckgrnd.BackgroundLocToDraw();
             spriteBatch.Draw(bckgrnd.BackgroundTextures[0], bkToDraw[0], Color.White);
             spriteBatch.Draw(bckgrnd.BackgroundTextures[1], bkToDraw[1], Color.White);
+            if (count > 1000)
+            {
+                bool deb = true;
+            }
             foreach (GameObject obj in allObjects)
             {
+                if (hrt == null && obj is Heart)
+                {
+                    hrt = (Heart)obj;
+                }
                 if (obj is Floor)
+                {
+                    continue;
+                }
+                if (!obj.NeedToBeDraw)
                 {
                     continue;
                 }
                 spriteBatch.Draw(obj.CurrentTexture, obj.Loc, null, Color.White, 0f, new Vector2(0, 0), obj.Scale, SpriteEffects.None, 0f);
                 //spriteBatch.Draw(obj.CurrentTexture, new Rectangle((int)obj.Loc.X, (int)obj.Loc.Y, obj.CurrentTexture.Width, obj.CurrentTexture.Height), Color.White, 0f, null, obj.Scale, SpriteEffects.None, 0);
             }
+            spriteBatch.DrawString(fntForPauseOrDeath, "POINTS " + (long)mrio.Points, new Vector2(hrt.Left, hrt.Bottom), Color.White);
             //spriteBatch.Draw(mrio.CurrentTexture, new Rectangle((int)mrio.Loc.X, (int)mrio.Loc.Y, mrio.CurrentTexture.Width, mrio.CurrentTexture.Height), Color.White);
-            // TODO: Add your drawing code here
-
+            if (isInPause)
+            {
+                if (mrio.HasLost)
+                {
+                    //spriteBatch.DrawString(fntForPauseOrDeath, "POINTS: " + mrio.Points, new Vector2(mrio.Left - mrio.CurrentTexture.Width / 3.5f, mrio.Top - 150), Color.White);
+                    spriteBatch.DrawString(fntForPauseOrDeath, "YOU LOST", new Vector2(mrio.Left - mrio.CurrentTexture.Width / 3.5f, mrio.Top - 120), Color.White);
+                    spriteBatch.DrawString(fntForPauseOrDeath, "PRESS C TO RESTART", new Vector2(mrio.Left - mrio.CurrentTexture.Width, mrio.Top - 90), Color.White);
+                }
+                else
+                {
+                    spriteBatch.DrawString(fntForPauseOrDeath, "PAUSE", new Vector2(mrio.Left - mrio.CurrentTexture.Width / 4, mrio.Top - 120), Color.White);
+                }
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }

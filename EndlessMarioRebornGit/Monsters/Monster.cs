@@ -11,12 +11,22 @@ namespace EndlessMarioRebornGit.Monsters
 {
     class Monster : MovingObj
     {
-        bool isDead;
+        private bool isDead;
+        private int framesFromDeath;
+        private const int MAX_FRAMES_BEFORE_DISPOSAL = 20;
+
+        private Texture2D deadTexture;
+        private Texture2D deadTextureFlipped;
+
+
         public Monster(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower,
-          float jumpingPower, float maxSpeed, Floor flr, Strategy strtgy) : base(texturesFacingRight, texturesFacingLeft, startLoc, scale, isCollideAble,
+          float jumpingPower, float maxSpeed, Floor flr, Strategy strtgy, Texture2D deadTexture, Texture2D deadTextureFlipped) : base(texturesFacingRight, texturesFacingLeft, startLoc, scale, isCollideAble,
               walkingPower, jumpingPower, maxSpeed, flr, strtgy)
         {
+            this.deadTexture = deadTexture;
+            this.deadTextureFlipped = deadTextureFlipped;
             isDead = false;
+            framesFromDeath = -1;
         }
 
         public bool IsDead
@@ -24,15 +34,19 @@ namespace EndlessMarioRebornGit.Monsters
             get { return isDead; }
         }
 
+
         protected override void HandleCollusion(Mario other, List<Direction> dirs)
         {
-            if (dirs.Contains(Direction.Down) && other.Loc.Y + other.CurrentTexture.Height*Scale < Loc.Y + CurrentTexture.Height*Scale)
+            if (!isDead)
             {
-                HitMnstr(other);
-            }
-            else
-            {
-                other.HitMrio(this);
+                if (dirs.Contains(Direction.Down) && other.Loc.Y + other.CurrentTexture.Height * Scale < Loc.Y + CurrentTexture.Height * Scale)
+                {
+                    HitMnstr(other);
+                }
+                else
+                {
+                    other.HitMrio(this);
+                }
             }
         }
 
@@ -42,11 +56,42 @@ namespace EndlessMarioRebornGit.Monsters
         public void HitMnstr(Mario mrio)
         {
             Die();
+            mrio.AddPointsFromKillingMonster();
         }
 
         protected void Die()
         {
-            isDead = true;
+            if (!isDead)
+            {
+                framesFromDeath = 0;
+                isDead = true;
+                currentTexture = isFlipped ? deadTextureFlipped : deadTexture;
+                Loc = new Vector2(Loc.X, Physics.FLOOR_LOC - currentTexture.Height * scale);
+            }
+        }
+
+        public override void UpdateFrameStart()
+        {
+            if (!isDead)
+            {
+                base.UpdateFrameStart();
+            }
+            else
+            {
+                framesFromDeath++;
+                if (framesFromDeath > MAX_FRAMES_BEFORE_DISPOSAL)
+                {
+                    isNeedDisposal = true;
+                }
+            }
+        }
+
+        public override void UpdateFrameEnd()
+        {
+            if (!isDead)
+            {
+                base.UpdateFrameEnd();
+            }
         }
     }
 }

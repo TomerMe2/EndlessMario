@@ -10,13 +10,14 @@ namespace EndlessMarioRebornGit
 {
     class Floor : GameObject
     {
-        private int gameHeight;
-        private int gameWidth;
+        private float gameHeight;
+        private float gameWidth;
 
         public Floor(int gameWidth, int gameHeight) : base(new Vector2(0, Physics.FLOOR_LOC), 1, true)
         {
             this.gameHeight = gameHeight;
-            this.gameWidth = gameWidth;
+            //this.gameWidth = gameWidth;
+            this.gameWidth = float.MaxValue;
         }
 
         public override float Bottom

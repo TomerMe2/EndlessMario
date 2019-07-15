@@ -66,7 +66,7 @@ namespace EndlessMarioRebornGit
             this.strtgy = strtgy;
         }
 
-        public void UpdateFrameStart()
+        public virtual void UpdateFrameStart()
         {
             //first, handle move strategy
             List<Command> cmnds = strtgy.GetCommands();
@@ -101,7 +101,7 @@ namespace EndlessMarioRebornGit
 
         }
 
-        public void UpdateFrameEnd()
+        public virtual void UpdateFrameEnd()
         {
             if (isWalking)
             {
@@ -284,13 +284,19 @@ namespace EndlessMarioRebornGit
         /// </summary>
         public virtual void Jump()
         {
+
             if (!isJumping)   //if it's not jumping alraedy
             {
-                isJumping = true;
-                accelerationY = Physics.GRAVITY;
-                speedY = -jumpingPower + accelerationY;
-                UpdateTextureToJumpingFalling();   //Updating the textures
+                JumpProtected(jumpingPower);
             }
+        }
+
+        protected virtual void JumpProtected(float jumpingPower)
+        {
+            isJumping = true;
+            accelerationY = Physics.GRAVITY;
+            speedY = -jumpingPower + accelerationY;
+            UpdateTextureToJumpingFalling();   //Updating the textures
         }
 
         /// <summary>

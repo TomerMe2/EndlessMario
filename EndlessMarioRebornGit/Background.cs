@@ -59,7 +59,7 @@ namespace EndlessMarioRebornGit
             }
             foreach (GameObject obj in this.allObjectsButMario)
             {
-                if (!(obj is Mario))
+                if (!(obj is Mario) && !(obj is Heart) && !(obj is BlackScreen))
                 {
                     obj.MoveOnX(-marioSpeed);
                 }
