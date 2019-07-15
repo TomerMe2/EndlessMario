@@ -35,6 +35,7 @@ namespace EndlessMarioRebornGit.Strategies
                     {
                         AddToCommands(new MoveLeftCommand());
                     }
+                    prevCount = 15;
                 }
                 else if (rndDub < 0.6)
                 {
@@ -42,6 +43,12 @@ namespace EndlessMarioRebornGit.Strategies
                     {
                         AddToCommands(new MoveRightCommand());
                     }
+                    prevCount = 15;
+                }
+                else
+                {
+                    //add nothing
+                    prevCount = 15;
                 }
             }
             return base.GetCommands();

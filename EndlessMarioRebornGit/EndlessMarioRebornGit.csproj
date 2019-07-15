@@ -49,6 +49,7 @@
     <Compile Include="Commands\MoveLeftCommand.cs" />
     <Compile Include="Commands\MoveRightCommand.cs" />
     <Compile Include="Monsters\Goomba.cs" />
+    <Compile Include="Monsters\Monster.cs" />
     <Compile Include="Strategies\RandomLeftRightStay.cs" />
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Strategies\UserMarioMovingStrategy.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EndlessMarioRebornGit.Monsters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -81,12 +82,18 @@ namespace EndlessMarioRebornGit
             this.loc.X = this.loc.X + howMuch;
         }
 
+        protected virtual void HandleCollusion(GameObject other, List<Direction> dirs) { }
+
         protected virtual void HandleCollusion(Pipe other, List<Direction> dirs) { }
 
         protected virtual void HandleCollusion(Floor other, List<Direction> dirs)
         {
             //Direction is always Up
         }
+
+        protected virtual void HandleCollusion(Mario other, List<Direction> dirs) { }
+
+        protected virtual void HandleCollusion(Monster other, List<Direction> dirs) { }
 
         private bool CheckCollusionRight(float otherLeft)
         {
@@ -125,13 +132,8 @@ namespace EndlessMarioRebornGit
         }
 
 
-        protected virtual void HandleCollusion(GameObject other, List<Direction> dirs) { }
 
-        /// <summary>
-        /// Returns the direction of other realative to this if there's a collusion. Returns Direction.None otherwise
-        /// Prefers left/right collusions over up/bottom collusions
-        /// </summary>
-        public List<Direction> Collusion(MovingObj other)
+        protected List<Direction> ProtectedCollusion(MovingObj other, float thisLeft, float thisRight, float thisTop, float thisBottom)
         {
             //TODO: override it in MovingObj so this obj can have speed to!
             //other is checking if he is colliding me
@@ -140,7 +142,7 @@ namespace EndlessMarioRebornGit
             float otherLeft = other.Left + other.SpeedX;
             float otherRight = other.Right + other.SpeedX;
             List<Direction> dirs = new List<Direction>();
-            if (!(this.Left <= otherRight && this.Right >= other.Left && this.Bottom >= otherTop && this.Top <= otherBottom))
+            if (!(thisLeft <= otherRight && thisRight >= other.Left && thisBottom >= otherTop && thisTop <= otherBottom))
             {
                 //there's no collusion
                 return dirs;
@@ -148,20 +150,20 @@ namespace EndlessMarioRebornGit
             //TODO: override it in MovingObj so this obj can have speed to!
             //other is checking if he is colliding me
             //check collusion from right
-            if (this.Right > otherLeft && this.Left <= otherLeft)
+            if (thisRight > otherLeft && thisLeft <= otherLeft)
             {
                 //it's in X range of collusion, check Y
-                if (this.Top <= otherTop && this.Bottom >= otherBottom)
+                if (thisTop <= otherTop && thisBottom >= otherBottom)
                 {
                     //this is Bigger than other (other is inside of this Y)
                     dirs.Add(Direction.Right);
                 }
-                else if (otherTop <= this.Top && otherBottom >= this.Bottom)
+                else if (otherTop <= thisTop && otherBottom >= thisBottom)
                 {
                     //other is bigger than this
                     dirs.Add(Direction.Right);
                 }
-                else if (!(this is Floor) && otherTop <= this.Top && otherBottom >= this.Top)
+                else if (!(this is Floor) && otherTop <= thisTop && otherBottom >= thisTop)
                 {
                     //other is in limbo
                     dirs.Add(Direction.Right);
@@ -170,56 +172,56 @@ namespace EndlessMarioRebornGit
             if (!dirs.Contains(Direction.Right))
             {
                 //check from left
-                if (this.Left <= otherRight && this.Right >= otherRight)
+                if (thisLeft <= otherRight && thisRight >= otherRight)
                 {
                     //it's in X range of collusion, check Y
-                    if (this.Top <= otherTop && this.Bottom >= otherBottom)
+                    if (thisTop <= otherTop && thisBottom >= otherBottom)
                     {
                         //this is Bigger than other (other is inside of this Y)
                         dirs.Add(Direction.Left);
                     }
-                    else if (otherTop <= this.Top && otherBottom >= this.Bottom)
+                    else if (otherTop <= thisTop && otherBottom >= thisBottom)
                     {
                         //other is bigger than this
                         dirs.Add(Direction.Left);
                     }
-                    else if (!(this is Floor) && otherTop <= this.Top && otherBottom >= this.Top)
+                    else if (!(this is Floor) && otherTop <= thisTop && otherBottom >= thisTop)
                     {
                         //other is in limbo
                         dirs.Add(Direction.Left);
                     }
                 }
             }
-            if (this.Top <= otherBottom && this.Bottom >= otherTop)
+            if (thisTop <= otherBottom && thisBottom >= otherTop)
             {
                 //in Y range. check if X is in range
-                if (this.Left <= otherLeft && this.Right >= otherRight)  //this is bigger than other
+                if (thisLeft <= otherLeft && thisRight >= otherRight)  //this is bigger than other
                 {
                     dirs.Add(Direction.Up);
                 }
-                else if (otherLeft <= this.Left && otherRight >= this.Right)  //other is bigger than this
+                else if (otherLeft <= thisLeft && otherRight >= thisRight)  //other is bigger than this
                 {
                     dirs.Add(Direction.Up);
                 }
-                else if ((other.PrevSarfuce == null || this.Equals(other.PrevSarfuce)) && this.Left >= otherLeft && this.Left <= otherRight)  //other partially standing on this, other is on right side of this
+                else if ((other.PrevSarfuce == null || this.Equals(other.PrevSarfuce)) && thisLeft >= otherLeft && thisLeft <= otherRight)  //other partially standing on this, other is on right side of this
                 {
                     dirs.Add(Direction.Up);
                 }
-                else if ((other.PrevSarfuce == null || this.Equals(other.PrevSarfuce)) && this.Right <= otherRight && this.Right >= otherLeft)   //other partially standing on this, other is on left side of this
+                else if ((other.PrevSarfuce == null || this.Equals(other.PrevSarfuce)) && thisRight <= otherRight && thisRight >= otherLeft)   //other partially standing on this, other is on left side of this
                 {
                     dirs.Add(Direction.Up);
                 }
             }
             if (!dirs.Contains(Direction.Up))
             {
-                if (this.Bottom >= otherTop && this.Top <= otherBottom)
+                if (thisBottom >= otherTop && thisTop <= otherBottom)
                 {
                     //Y is in range. Check if X is in range
-                    if (this.Left <= otherLeft && this.Right >= otherRight)  //this is bigger than other
+                    if (thisLeft <= otherLeft && thisRight >= otherRight)  //this is bigger than other
                     {
                         dirs.Add(Direction.Down);
                     }
-                    else if (otherLeft <= this.Left && otherRight >= this.Right)  //other is bigger than this
+                    else if (otherLeft <= thisLeft && otherRight >= thisRight)  //other is bigger than this
                     {
                         dirs.Add(Direction.Down);
                     }
@@ -229,7 +231,7 @@ namespace EndlessMarioRebornGit
             {
                 if (dirs.Contains(Direction.Left))
                 {
-                    if (other.Bottom > this.Top)
+                    if (other.Bottom > thisTop)
                     {
                         //flip em
                         dirs[0] = Direction.Up;
@@ -238,7 +240,7 @@ namespace EndlessMarioRebornGit
                 }
                 if (dirs.Contains(Direction.Right))
                 {
-                    if (other.Bottom > this.Top)
+                    if (other.Bottom > thisTop)
                     {
                         //flip em
                         dirs[0] = Direction.Up;
@@ -248,6 +250,14 @@ namespace EndlessMarioRebornGit
             }
             other.HandleCollusion((dynamic)this, dirs);
             return dirs;
+        }
+        /// <summary>
+        /// Returns the direction of other realative to this if there's a collusion. Returns Direction.None otherwise
+        /// Prefers left/right collusions over up/bottom collusions
+        /// </summary>
+        public virtual List<Direction> Collusion(MovingObj other)
+        {
+            return ProtectedCollusion(other, this.Left, this.Right, this.Top, this.Bottom);
         }
     }
 }

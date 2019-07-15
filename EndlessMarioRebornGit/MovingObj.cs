@@ -69,10 +69,6 @@ namespace EndlessMarioRebornGit
         public void UpdateFrameStart()
         {
             //first, handle move strategy
-            if (this is Goomba)
-            {
-                bool deb = true;
-            }
             List<Command> cmnds = strtgy.GetCommands();
             foreach (Command cmnd in cmnds)
             {
@@ -286,7 +282,7 @@ namespace EndlessMarioRebornGit
         /// <summary>
         /// Initiates jump 
         /// </summary>
-        protected virtual void Jump()
+        public virtual void Jump()
         {
             if (!isJumping)   //if it's not jumping alraedy
             {
@@ -328,6 +324,7 @@ namespace EndlessMarioRebornGit
             HandleCommand((dynamic) cmnd);
         }
 
+
         protected void HandleCommand(MoveLeftCommand lftCmnd)
         {
             Walk(Direction.Left);
@@ -345,7 +342,7 @@ namespace EndlessMarioRebornGit
 
 
 
-        protected virtual void Walk(Direction dir)
+        public virtual void Walk(Direction dir)
         {
             bool isChangingDir = (dir == Direction.Left && !isFlipped) || (dir == Direction.Right && isFlipped);
             if ((!isWalkingPrevFrame) || (isWalkingPrevFrame && isChangingDir))
@@ -446,6 +443,11 @@ namespace EndlessMarioRebornGit
             }
         }
 
+        public override List<Direction> Collusion(MovingObj other)
+        {
+            return ProtectedCollusion(other, Left + speedX, Right + speedX, Top + SpeedY, Bottom + SpeedY);
+        }
+
         protected override void HandleCollusion(Pipe other, List<Direction> dirs)
         {
             CollusionWithHardObj(other, dirs);
@@ -456,6 +458,8 @@ namespace EndlessMarioRebornGit
             //Direction is always Up
             CollusionWithHardObj(other, dirs);
         }
+
+
 
         /// <summary>
         /// Flip the object

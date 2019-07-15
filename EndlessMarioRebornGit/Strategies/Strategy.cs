@@ -26,12 +26,12 @@ namespace EndlessMarioRebornGit.Strategies
             return new List<Command>();
         }
 
-        protected void AddToCommands(List<Command> cmndsLst)
+        protected virtual void AddToCommands(List<Command> cmndsLst)
         {
             cmnds.Enqueue(cmndsLst);
         }
 
-        protected void AddToCommands(Command cmnd)
+        protected virtual void AddToCommands(Command cmnd)
         {
             List<Command> lst = new List<Command>();
             lst.Add(cmnd);

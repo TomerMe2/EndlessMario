@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using EndlessMarioRebornGit.Strategies;
+using EndlessMarioRebornGit.Monsters;
+
 namespace EndlessMarioRebornGit
 {
     /// <summary>
@@ -78,7 +80,7 @@ namespace EndlessMarioRebornGit
             {
                 gmbaFacingLeftTextures.Add(Content.Load<Texture2D>(@"Goomba\" + assetName));
             }
-            Goomba gmba = new Goomba(gmbaFacingRightTextures, gmbaFacingRightTextures, flr, 500, new RandomLeftRightStay());
+            Goomba gmba = new Goomba(gmbaFacingRightTextures, gmbaFacingLeftTextures, flr, 500, new RandomLeftRightStay());
             allObjects.Add(gmba);
 
             lstObjsToDraw = new List<GameObject>();
@@ -113,15 +115,18 @@ namespace EndlessMarioRebornGit
                 Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                mrioStrategy.RightArrowClicked();
+                //mrioStrategy.RightArrowClicked();
+                mrio.Walk(Direction.Right);
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                mrioStrategy.LeftArrowClicked();
+                //mrioStrategy.LeftArrowClicked();
+                mrio.Walk(Direction.Left);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Space))
             {
-                mrioStrategy.SpaceClicked();
+                //mrioStrategy.SpaceClicked();
+                mrio.Jump();
             }
             GameObject newObj = GameObjsCreator.Create((Pipe)allObjects[2], this);
             if (newObj != null)
