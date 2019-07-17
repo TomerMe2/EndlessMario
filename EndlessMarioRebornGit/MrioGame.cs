@@ -160,15 +160,19 @@ namespace EndlessMarioRebornGit
             {
                 if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
-                    mrio.Walk(Direction.Right);
+                    mrioStrategy.RightArrowClicked();
                 }
                 else if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
-                    mrio.Walk(Direction.Left);
+                    mrioStrategy.LeftArrowClicked();
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
-                    mrio.Jump();
+                    mrioStrategy.SpaceClicked();
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                {
+                    mrioStrategy.DownArrowClicked();
                 }
                 GameObject newObj = crtr.Create();
                 if (newObj != null)

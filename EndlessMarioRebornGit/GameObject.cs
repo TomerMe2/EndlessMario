@@ -111,6 +111,8 @@ namespace EndlessMarioRebornGit
 
         protected virtual void HandleCollusion(Monster other, List<Direction> dirs) { }
 
+        protected virtual void HandleCollusion(CannonBomb other, List<Direction> dirs) { }
+
         private bool CheckCollusionRight(float otherLeft)
         {
             return (otherLeft <= this.Right && otherLeft >= this.Left);

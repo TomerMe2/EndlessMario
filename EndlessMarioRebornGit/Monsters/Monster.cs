@@ -59,7 +59,7 @@ namespace EndlessMarioRebornGit.Monsters
             mrio.AddPointsFromKillingMonster();
         }
 
-        protected void Die()
+        protected virtual void Die()
         {
             if (!isDead)
             {

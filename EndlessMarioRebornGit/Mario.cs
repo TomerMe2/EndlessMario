@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Monsters;
+using EndlessMarioRebornGit.Commands;
 
 namespace EndlessMarioRebornGit
 {
@@ -22,12 +23,13 @@ namespace EndlessMarioRebornGit
         private const int MAX_TURNS_COUNT_FROM_HIT = 97;
         private const int MAX_TURNS_COUNT_TO_FLICKER = 4;
         private const int FRAMES_OFF_DAMAGE_GRACE = 10;
-        private bool isHit;
         private int turnsCountFromHit;
-        private bool isMarioSuper = false;
         private double points;
         private List<Heart> hrtsLst;
         private bool hasLost;
+        private float distanceAcc;
+        private float lastXtoRaisePoints;
+
         public static string[] texturesNameFacingRight = { "MarioStand", "MarioWalk1", "MarioWalk2", "MarioWalk3", "MarioJump" };
         public static string[] texturesNameFacingLeft = {"MarioStandFlip", "MarioWalk1Flip", "MarioWalk2Flip", "MarioWalk3Flip", "MarioJumpFlip" };
 
@@ -35,14 +37,21 @@ namespace EndlessMarioRebornGit
             new Vector2(MARIOSTARTLOC.X, MARIOSTARTLOC.Y - texturesFacingLeft.ElementAt(0).Height*0.6f), 0.6f, true, MARIOACCELERATIONX, MARIOJUMPOWER, MARIOMAXNORMALSPEEDX, flr, strtgy)
         {
             this.hrtsLst = hrtsLst.ToList();
-            isHit = false;
             turnsCountFromHit = -1;
             hasLost = false;
             points = 0;
+            distanceAcc = 0;
+            lastXtoRaisePoints = 0;
         }
 
         public override void UpdateFrameStart()
         {
+            distanceAcc += speedX;
+            if (distanceAcc > lastXtoRaisePoints + 200)
+            {
+                AddPointsFromDistance();
+                lastXtoRaisePoints = distanceAcc;
+            }
             if (turnsCountFromHit >= 0)
             {
                 turnsCountFromHit--;
@@ -58,9 +67,15 @@ namespace EndlessMarioRebornGit
             base.UpdateFrameStart();
         }
 
+
         protected override void UpdateSpeedEndOfFrame()
         {
             loc.Y = loc.Y + speedY;
+        }
+
+        protected override void HandleCollusion(CannonBomb other, List<Direction> dirs)
+        {
+            HitMrio(other);
         }
 
         protected override void HandleCollusion(Monster other, List<Direction> dirs) {
@@ -88,7 +103,6 @@ namespace EndlessMarioRebornGit
         {
             if (turnsCountFromHit < 0)
             {
-                isHit = true;
                 turnsCountFromHit = MAX_TURNS_COUNT_FROM_HIT;
                 hrtsLst[hrtsLst.Count - 1].PrepareForDisposal();
                 hrtsLst.RemoveAt(hrtsLst.Count - 1);

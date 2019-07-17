@@ -16,8 +16,8 @@ namespace EndlessMarioRebornGit
     abstract class MovingObj : GameObject
     {
         private const int FRAMES_BEFORE_CHANGING_TEXTURE = 6;
-        private List<Texture2D> texturesFacingRight;
-        private List<Texture2D> texturesFacingLeft;
+        protected List<Texture2D> texturesFacingRight;
+        protected List<Texture2D> texturesFacingLeft;
         protected bool isWalking;
         protected bool isWalkingPrevFrame;
         protected bool isFlipped;
@@ -102,7 +102,7 @@ namespace EndlessMarioRebornGit
         }
 
         public virtual void UpdateFrameEnd()
-        {
+        { 
             if (isWalking)
             {
                 if (!isJumping)
@@ -302,7 +302,7 @@ namespace EndlessMarioRebornGit
         /// <summary>
         /// Initiates fall
         /// </summary>
-        public void Fall()
+        protected virtual void Fall()
         {
             if (speedY == 0)   //if it's not falling already
             {
