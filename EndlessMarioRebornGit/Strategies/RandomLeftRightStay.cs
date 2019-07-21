@@ -11,7 +11,6 @@ namespace EndlessMarioRebornGit.Strategies
     {
         private Random rnd;
         private int prevCount;
-        private Direction prevDir;
 
         public RandomLeftRightStay()
         {

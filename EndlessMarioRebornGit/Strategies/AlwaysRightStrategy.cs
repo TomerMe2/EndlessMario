@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace EndlessMarioRebornGit.Strategies
 {
-    class AlwaysLeftStrategy : Strategy
+    class AlwaysRightStrategy : Strategy
     {
-        public AlwaysLeftStrategy()
+        public AlwaysRightStrategy()
         {
 
         }
@@ -17,9 +17,8 @@ namespace EndlessMarioRebornGit.Strategies
         public override List<Command> GetCommands()
         {
             List<Command> toRet = new List<Command>();
-            toRet.Add(new MoveLeftCommand());
+            toRet.Add(new MoveRightCommand());
             return toRet;
         }
-
     }
 }

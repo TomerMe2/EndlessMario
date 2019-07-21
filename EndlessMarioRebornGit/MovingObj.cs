@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Commands;
+using EndlessMarioRebornGit.StillObjects;
+using EndlessMarioRebornGit.Monsters;
 
 namespace EndlessMarioRebornGit
 {
@@ -31,8 +33,8 @@ namespace EndlessMarioRebornGit
         private float jumpingPower;
         private float walkingPower;
         private int changingTextureCounter;
-        private List<GameObject> collidedWithPrevTurn;
-        private List<GameObject> collidesWithNow;
+        protected List<GameObject> collidedWithPrevTurn;
+        protected List<GameObject> collidesWithNow;
         private GameObject sarfuce;
         private GameObject prevSarfuce;
         private Strategy strtgy;
@@ -331,22 +333,25 @@ namespace EndlessMarioRebornGit
         }
 
 
-        protected void HandleCommand(MoveLeftCommand lftCmnd)
+        protected virtual void HandleCommand(MoveLeftCommand lftCmnd)
         {
             Walk(Direction.Left);
         }
 
-        protected void HandleCommand(MoveRightCommand rightCmnd)
+        protected virtual void HandleCommand(MoveRightCommand rightCmnd)
         {
             Walk(Direction.Right);
         }
 
-        protected void HandleCommand(JumpCommand jmpCmnd)
+        protected virtual void HandleCommand(JumpCommand jmpCmnd)
         {
             Jump();
         }
 
-
+        protected virtual void HandleCommand(ChestSwitchCommand openChstCmnd)
+        {
+            
+        }
 
         public virtual void Walk(Direction dir)
         {
@@ -381,15 +386,6 @@ namespace EndlessMarioRebornGit
             {
                 return;
             }
-            if (isJumping)
-            {
-                string deb = "deb";
-            }
-            if (dirs.Contains(Direction.Up) && dirs.Contains(Direction.Left))
-            {
-                string deb = "deb";
-            }
-            collidesWithNow.Add(other);
             if (dirs.Count > 1 && dirs[0] != Direction.Up && dirs.Contains(Direction.Up))
             {
                 sarfuce = other;
@@ -456,15 +452,37 @@ namespace EndlessMarioRebornGit
 
         protected override void HandleCollusion(Pipe other, List<Direction> dirs)
         {
+            collidesWithNow.Add(other);
             CollusionWithHardObj(other, dirs);
         }
 
         protected override void HandleCollusion(Floor other, List<Direction> dirs)
         {
             //Direction is always Up
+            collidesWithNow.Add(other);
             CollusionWithHardObj(other, dirs);
         }
 
+        protected override void HandleCollusion(GameObject other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
+
+
+        protected override void HandleCollusion(Mario other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
+
+        protected override void HandleCollusion(Monster other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
+
+        protected override void HandleCollusion(CannonBomb other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
 
 
         /// <summary>

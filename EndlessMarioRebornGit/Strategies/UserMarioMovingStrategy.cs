@@ -30,6 +30,11 @@ namespace EndlessMarioRebornGit.Strategies
             AddToCommands(new JumpCommand());
         }
 
+        public void ChestSwitchClicked()
+        {
+            AddToCommands(new ChestSwitchCommand());
+        }
+
         /// <summary>
         /// This Stategy uses only one list, and not a queue. That is because commands need to be in real time.
         /// </summary>

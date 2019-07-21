@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Input;
 using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Monsters;
 using EndlessMarioRebornGit.Commands;
+using EndlessMarioRebornGit.StillObjects;
 
 namespace EndlessMarioRebornGit
 {
@@ -75,10 +76,13 @@ namespace EndlessMarioRebornGit
 
         protected override void HandleCollusion(CannonBomb other, List<Direction> dirs)
         {
+            base.HandleCollusion(other, dirs);
             HitMrio(other);
         }
 
-        protected override void HandleCollusion(Monster other, List<Direction> dirs) {
+        protected override void HandleCollusion(Monster other, List<Direction> dirs)
+        {
+            base.HandleCollusion(other, dirs);
             if (!other.IsDead)
             {
                 if ((dirs.Count == 1 && dirs[0] == Direction.Up || dirs.Count == 2 && dirs[1] == Direction.Up) && other.Loc.Y + other.CurrentTexture.Height * other.Scale > Loc.Y + CurrentTexture.Height * Scale)
@@ -96,6 +100,7 @@ namespace EndlessMarioRebornGit
             // {UP} is good
         }
 
+
         /// <summary>
         /// Mario is being hit by that monster
         /// </summary>
@@ -111,6 +116,19 @@ namespace EndlessMarioRebornGit
                     hasLost = true;
                 }
             }
+        }
+
+        /// <summary>
+        /// Mario is killed instantly by that monster
+        /// </summary>
+        public void Kill(Monster mnstr)
+        {
+            foreach (Heart hrt in hrtsLst)
+            {
+                hrt.PrepareForDisposal();
+            }
+            hrtsLst.Clear();
+            hasLost = true;
         }
 
         public void AddPointsFromDistance()

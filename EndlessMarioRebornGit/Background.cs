@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EndlessMarioRebornGit.MenuObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -53,10 +54,6 @@ namespace EndlessMarioRebornGit
         /// <param name="marioSpeed"></param>
         public void BackgroundUpate(float marioSpeed)
         {
-            if (marioSpeed < -4)
-            {
-                string debug = "asldkjsl";
-            }
             foreach (GameObject obj in this.allObjectsButMario)
             {
                 if (!(obj is Mario) && !(obj is Heart) && !(obj is BlackScreen))

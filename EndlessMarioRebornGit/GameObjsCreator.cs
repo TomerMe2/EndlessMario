@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EndlessMarioRebornGit.Monsters;
 using EndlessMarioRebornGit.Strategies;
 using Microsoft.Xna.Framework.Graphics;
+using EndlessMarioRebornGit.StillObjects;
 
 namespace EndlessMarioRebornGit
 {
@@ -34,22 +35,20 @@ namespace EndlessMarioRebornGit
         /// <returns></returns>
         public GameObject Create()
         {
-            //TODO: think on a function that says when to create an object (0% on 0, 100% on 300, growing in pow of 2 at least)
-            if (lastX - 200 > startPipe.Left)
+            double shouldIbuildRnd = rndm.NextDouble();
+            double functionOutput = (lastX - startPipe.Left) / (1500 - mrio.Points / 50);
+            functionOutput = lastX - startPipe.Left < 140 ? 0 : functionOutput;
+            if (shouldIbuildRnd < functionOutput)
             {
+                //if (lastX - 200 > startPipe.Left)
                 //goes from 0.25 to 0, it's smaller the more progress the player have
                 double progressFee = startPipe.Left < 0 ? 0.25 - (mrio.Points / 100000) : 0.25;
                 progressFee = progressFee < 0 ? 0 : progressFee;
-                //mrio.AddPointsFromDistance();
-                if (progressFee < 0.10)
-                {
-                    bool deb = true;
-                }
                 double randDbl = rndm.NextDouble();
                 lastX = startPipe.Left;
                 return randDbl < 0.3 + progressFee ? CreateGoomba() :
                     randDbl < 0.6 ? (GameObject)CreateCannonBomb() :
-                    CreatePipe();               
+                    CreatePipe();
             }
             return null;
         }
@@ -86,6 +85,15 @@ namespace EndlessMarioRebornGit
             }
             return new CannonBomb(GetTexturesForList(CannonBomb.texturesNameFacingRight, ""),
                 GetTexturesForList(CannonBomb.texturesNameFacingLeft, ""), flr, 1000, randInt, cnnDeadTxtr,
+                cnnDeadTxtrFlipped, mrio.Points);
+        }
+
+        public HugeCannonBomb CreateHugeCannonBomb()
+        {
+            Texture2D cnnDeadTxtr = gm.Content.Load<Texture2D>(HugeCannonBomb.deadTextureNm);
+            Texture2D cnnDeadTxtrFlipped = gm.Content.Load<Texture2D>(HugeCannonBomb.deadTextureFlippedNm);
+            return new HugeCannonBomb(GetTexturesForList(HugeCannonBomb.texturesNameFacingRight, ""),
+                GetTexturesForList(HugeCannonBomb.texturesNameFacingLeft, ""), flr, -500, cnnDeadTxtr,
                 cnnDeadTxtrFlipped, mrio.Points);
         }
 

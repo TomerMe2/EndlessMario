@@ -42,7 +42,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Background.cs" />
-    <Compile Include="BlackScreen.cs" />
+    <Compile Include="MenuObjects\BlackScreen.cs" />
+    <Compile Include="Commands\ChestSwitchCommand.cs" />
     <Compile Include="Floor.cs" />
     <Compile Include="GameObjsCreator.cs" />
     <Compile Include="Commands\Command.cs" />
@@ -52,8 +53,10 @@
     <Compile Include="Heart.cs" />
     <Compile Include="Monsters\CannonBomb.cs" />
     <Compile Include="Monsters\Goomba.cs" />
+    <Compile Include="Monsters\HugeCannonBomb.cs" />
     <Compile Include="Monsters\Monster.cs" />
     <Compile Include="Strategies\AlwaysLeftStrategy.cs" />
+    <Compile Include="Strategies\AlwaysRightStrategy.cs" />
     <Compile Include="Strategies\RandomLeftRightStay.cs" />
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Strategies\UserMarioMovingStrategy.cs" />
@@ -62,7 +65,7 @@
     <Compile Include="Mario.cs" />
     <Compile Include="MovingObj.cs" />
     <Compile Include="Physics.cs" />
-    <Compile Include="Pipe.cs" />
+    <Compile Include="StillObjects\Pipe.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartingFlag.cs" />

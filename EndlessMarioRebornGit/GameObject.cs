@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EndlessMarioRebornGit.Monsters;
+using EndlessMarioRebornGit.StillObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -17,8 +18,6 @@ namespace EndlessMarioRebornGit
         protected bool isCollideAble;
         protected bool isNeedDisposal;
         protected bool needToBeDraw;
-
-        private bool hasMeetPipe = false;
 
         public GameObject(Vector2 loc, Texture2D texture, float scale, bool isCollideAble)
         {
@@ -134,6 +133,20 @@ namespace EndlessMarioRebornGit
             return (otherTop <= this.Bottom && otherTop >= this.Top);
         }
 
+        public void HideOrShow()
+        {
+            needToBeDraw = !needToBeDraw;
+        }
+
+        public void Show()
+        {
+            needToBeDraw = true;
+        }
+
+        public void Hide()
+        {
+            needToBeDraw = false;
+        }
 
 
         protected List<Direction> ProtectedCollusion(MovingObj other, float thisLeft, float thisRight, float thisTop, float thisBottom)
