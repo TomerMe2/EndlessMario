@@ -17,10 +17,10 @@ namespace EndlessMarioRebornGit.Monsters
         private const float GOMBA_MAX_SPEED = 2;
         private const float GOMBA_ACCELERATION_X = 0.5f;
         private const float GOMBA_SCALE = 2f;
-        public static string[] texturesNameFacingRight = { "GoombaStand", "GoombaWalk1", "GoombaWalk2", "GoombaWalk1"};
-        public static string[] texturesNameFacingLeft = { "GoombaStandFlip", "GoombaWalk1Flip", "GoombaWalk2Flip", "GoombaWalk1Flip"};
-        public static string deadTextureNm = "GoombaSquashed";
-        public static string deadTextureFlippedNm = "GoombaSquashedFlip";
+        public static string[] texturesNameFacingRight = { @"Goomba\GoombaStand", @"Goomba\GoombaWalk1", @"Goomba\GoombaWalk2", @"Goomba\GoombaWalk1" };
+        public static string[] texturesNameFacingLeft = { @"Goomba\GoombaStandFlip", @"Goomba\GoombaWalk1Flip", @"Goomba\GoombaWalk2Flip", @"Goomba\GoombaWalk1Flip" };
+        public static string deadTextureNm = @"Goomba\GoombaSquashed";
+        public static string deadTextureFlippedNm = @"Goomba\GoombaSquashedFlip";
 
         public Goomba(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Floor flr, float xLoc, Strategy strtgy, Texture2D deadTxtr, Texture2D deadTxtrFlip, double mrioPointsAtCreation) :
             base(texturesFacingRight, texturesFacingLeft, new Vector2(xLoc, Physics.FLOOR_LOC - texturesFacingLeft.ElementAt(0).Height * GOMBA_SCALE), GOMBA_SCALE, true,

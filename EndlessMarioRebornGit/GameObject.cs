@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EndlessMarioRebornGit.Monsters;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using EndlessMarioRebornGit.StillObjects;
 
 namespace EndlessMarioRebornGit
 {

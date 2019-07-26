@@ -9,11 +9,14 @@ using Microsoft.Xna.Framework.Input;
 using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Monsters;
 using EndlessMarioRebornGit.Commands;
+using EndlessMarioRebornGit.StillObjects;
+using EndlessMarioRebornGit.Weapons;
 
 namespace EndlessMarioRebornGit
 {
     class Mario : MovingObj
     {
+        public const int INVENTORY_SIZE = 6;
         public static Vector2 MARIOSTARTLOC = new Vector2(350, Physics.FLOOR_LOC); //TRUE START LOC
         //public static Vector2 MARIOSTARTLOC = new Vector2(250, Physics.FLOOR_LOC);
         private const float MARIOJUMPOWER = 17;
@@ -29,9 +32,13 @@ namespace EndlessMarioRebornGit
         private bool hasLost;
         private float distanceAcc;
         private float lastXtoRaisePoints;
+        private Weapon[] WpnsInventory;
+        private int currWpnInd;
+        private Chest focousedChest;
+        
 
-        public static string[] texturesNameFacingRight = { "MarioStand", "MarioWalk1", "MarioWalk2", "MarioWalk3", "MarioJump" };
-        public static string[] texturesNameFacingLeft = {"MarioStandFlip", "MarioWalk1Flip", "MarioWalk2Flip", "MarioWalk3Flip", "MarioJumpFlip" };
+        public static string[] texturesNameFacingRight = { @"Mario\MarioStand", @"Mario\MarioWalk1", @"Mario\MarioWalk2", @"Mario\MarioWalk3", @"Mario\MarioJump" };
+        public static string[] texturesNameFacingLeft = { @"Mario\MarioStandFlip", @"Mario\MarioWalk1Flip", @"Mario\MarioWalk2Flip", @"Mario\MarioWalk3Flip", @"Mario\MarioJumpFlip" };
 
         public Mario(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Floor flr, UserMarioMovingStrategy strtgy, List<Heart> hrtsLst) : base(texturesFacingRight, texturesFacingLeft, 
             new Vector2(MARIOSTARTLOC.X, MARIOSTARTLOC.Y - texturesFacingLeft.ElementAt(0).Height*0.6f), 0.6f, true, MARIOACCELERATIONX, MARIOJUMPOWER, MARIOMAXNORMALSPEEDX, flr, strtgy)
@@ -42,6 +49,9 @@ namespace EndlessMarioRebornGit
             points = 0;
             distanceAcc = 0;
             lastXtoRaisePoints = 0;
+            WpnsInventory = new Weapon[INVENTORY_SIZE];
+            currWpnInd = 0;
+            focousedChest = null;
         }
 
         public override void UpdateFrameStart()
@@ -75,10 +85,12 @@ namespace EndlessMarioRebornGit
 
         protected override void HandleCollusion(CannonBomb other, List<Direction> dirs)
         {
+            base.HandleCollusion(other, dirs);
             HitMrio(other);
         }
 
         protected override void HandleCollusion(Monster other, List<Direction> dirs) {
+            base.HandleCollusion(other, dirs);
             if (!other.IsDead)
             {
                 if ((dirs.Count == 1 && dirs[0] == Direction.Up || dirs.Count == 2 && dirs[1] == Direction.Up) && other.Loc.Y + other.CurrentTexture.Height * other.Scale > Loc.Y + CurrentTexture.Height * Scale)
@@ -111,6 +123,43 @@ namespace EndlessMarioRebornGit
                     hasLost = true;
                 }
             }
+        }
+
+        protected override void HandleCommand(ChestSwitchCommand chstSwtchCmnd)
+        {
+            if (focousedChest == null)  //there's no focused chest
+            {
+                foreach (GameObject obj in collidesWithNow)
+                {
+                    if (obj is Chest)
+                    {
+                        focousedChest = obj as Chest;
+                        break;
+                    }
+                }
+            }
+            else   //there's a focused chest
+            {
+                focousedChest = null;
+            }
+        }
+
+        /// <summary>
+        /// Mario is killed instantly by that monster
+        /// </summary>
+        public void Kill(Monster mnstr)
+        {
+            foreach (Heart hrt in hrtsLst)
+            {
+                hrt.PrepareForDisposal();
+            }
+            hrtsLst.Clear();
+            hasLost = true;
+        }
+
+        public Chest ChestToDisplay()
+        {
+            return focousedChest;
         }
 
         public void AddPointsFromDistance()

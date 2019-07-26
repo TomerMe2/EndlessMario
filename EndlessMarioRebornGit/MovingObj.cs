@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Commands;
+using EndlessMarioRebornGit.StillObjects;
+using EndlessMarioRebornGit.Monsters;
 
 namespace EndlessMarioRebornGit
 {
@@ -32,7 +34,7 @@ namespace EndlessMarioRebornGit
         private float walkingPower;
         private int changingTextureCounter;
         private List<GameObject> collidedWithPrevTurn;
-        private List<GameObject> collidesWithNow;
+        protected List<GameObject> collidesWithNow;
         private GameObject sarfuce;
         private GameObject prevSarfuce;
         private Strategy strtgy;
@@ -346,6 +348,11 @@ namespace EndlessMarioRebornGit
             Jump();
         }
 
+        protected virtual void HandleCommand(ChestSwitchCommand chstSwtchCmnd)
+        {
+
+        }
+
 
 
         public virtual void Walk(Direction dir)
@@ -389,7 +396,7 @@ namespace EndlessMarioRebornGit
             {
                 string deb = "deb";
             }
-            collidesWithNow.Add(other);
+            //collidesWithNow.Add(other);
             if (dirs.Count > 1 && dirs[0] != Direction.Up && dirs.Contains(Direction.Up))
             {
                 sarfuce = other;
@@ -456,13 +463,35 @@ namespace EndlessMarioRebornGit
 
         protected override void HandleCollusion(Pipe other, List<Direction> dirs)
         {
+            collidesWithNow.Add(other);
             CollusionWithHardObj(other, dirs);
         }
 
         protected override void HandleCollusion(Floor other, List<Direction> dirs)
         {
             //Direction is always Up
+            collidesWithNow.Add(other);
             CollusionWithHardObj(other, dirs);
+        }
+
+        protected override void HandleCollusion(GameObject other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
+
+        protected override void HandleCollusion(Mario other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
+
+        protected override void HandleCollusion(Monster other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
+
+        protected override void HandleCollusion(CannonBomb other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
         }
 
 

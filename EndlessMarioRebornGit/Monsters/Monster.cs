@@ -37,6 +37,7 @@ namespace EndlessMarioRebornGit.Monsters
 
         protected override void HandleCollusion(Mario other, List<Direction> dirs)
         {
+            base.HandleCollusion(other, dirs);
             if (!isDead)
             {
                 if (dirs.Contains(Direction.Down) && other.Loc.Y + other.CurrentTexture.Height * Scale < Loc.Y + CurrentTexture.Height * Scale)

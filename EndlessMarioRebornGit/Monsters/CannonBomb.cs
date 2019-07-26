@@ -47,6 +47,7 @@ namespace EndlessMarioRebornGit.Monsters
         protected override void HandleCollusion(Mario other, List<Direction> dirs)
         {
             //CannonBomb can't die, thus always hitting mario upon cullosion.
+            base.HandleCollusion(other, dirs);
             other.HitMrio(this);
         }
 
