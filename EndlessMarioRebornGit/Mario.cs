@@ -144,6 +144,27 @@ namespace EndlessMarioRebornGit
             }
         }
 
+        protected override void HandleCommand(InventorySwitchCommand chstSwtchCmnd)
+        {
+            currWpnInd = chstSwtchCmnd.NumOfItem - 1;
+        }
+
+        /// <summary>
+        /// CAN RETURN NULL!
+        /// </summary>
+        public Weapon GetCurrWeapon()
+        {
+            return WpnsInventory[currWpnInd];
+        }
+
+        /// <summary>
+        /// RETURNS A NUMBER BETWEEN 0 AND 5
+        /// </summary>
+        public int CurrCellIndxOfChosenWpn()
+        {
+            return currWpnInd;
+        }
+
         /// <summary>
         /// Mario is killed instantly by that monster
         /// </summary>

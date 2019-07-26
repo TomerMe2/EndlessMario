@@ -35,6 +35,15 @@ namespace EndlessMarioRebornGit.Strategies
             AddToCommands(new ChestSwitchCommand());
         }
 
+        //TODO: MAKE IT SAFE WHILE ATTACKING
+        public void NumClicked(int num)
+        {
+            if (num >= 1 && num <= 6)
+            {
+                AddToCommands(new InventorySwitchCommand(num));
+            }
+        }
+
         /// <summary>
         /// This Stategy uses only one list, and not a queue. That is because commands need to be in real time.
         /// </summary>

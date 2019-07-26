@@ -10,7 +10,6 @@ namespace EndlessMarioRebornGit.Commands
     {
         public ChestSwitchCommand()
         {
-
         }
     }
 }

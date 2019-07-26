@@ -15,6 +15,7 @@ namespace EndlessMarioRebornGit
         protected Vector2 loc;
         protected Texture2D currentTexture;
         protected float scale;
+        protected float angleInRads;  //in radians
         protected bool isCollideAble;
         protected bool isNeedDisposal;
         protected bool needToBeDraw;
@@ -26,6 +27,7 @@ namespace EndlessMarioRebornGit
             this.loc = loc;
             this.currentTexture = texture;
             this.scale = scale;
+            angleInRads = 0;
             this.isCollideAble = isCollideAble;
             isNeedDisposal = false;
             needToBeDraw = true; 
@@ -43,6 +45,12 @@ namespace EndlessMarioRebornGit
         {
             get { return loc; }
             set { loc = value; }
+        }
+
+        virtual public float AngleInRads
+        {
+            get { return angleInRads; }
+            protected set { angleInRads = value; }
         }
 
         public bool NeedToBeDraw
@@ -97,6 +105,24 @@ namespace EndlessMarioRebornGit
         public virtual void MoveOnX(float howMuch)
         {
             this.loc.X = this.loc.X + howMuch;
+        }
+
+        /// <summary>
+        /// Adds howMuchInRads to the current angle
+        /// IF ANGLE IS NOT 0, ALL PHYSICS ENGINE GOES TO HELL
+        /// </summary>
+        public virtual void Rotate(float howMuchInRads)
+        {
+            angleInRads = angleInRads + howMuchInRads;
+            //normalize it
+            while (angleInRads > 2*Math.PI)
+            {
+                angleInRads = angleInRads - (float)(2 * Math.PI);
+            }
+            while (angleInRads < -2 * Math.PI)
+            {
+                angleInRads = angleInRads + (float)(2 * Math.PI);
+            }
         }
 
         protected virtual void HandleCollusion(GameObject other, List<Direction> dirs) { }

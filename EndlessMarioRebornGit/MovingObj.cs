@@ -353,7 +353,10 @@ namespace EndlessMarioRebornGit
 
         }
 
+        protected virtual void HandleCommand(InventorySwitchCommand chstSwtchCmnd)
+        {
 
+        }
 
         public virtual void Walk(Direction dir)
         {

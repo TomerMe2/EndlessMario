@@ -19,6 +19,7 @@ namespace EndlessMarioRebornGit
         private Background bckgrnd;
         private List<GameObject> allNotMenuObjects;
         private List<GameObject> allMenuObjects;
+        private List<ItemCell> mrioInventoryCells;
         private BlackScreen blkScrn;
         private bool isInPause;
         private bool isEscpWasPressed;
@@ -33,6 +34,7 @@ namespace EndlessMarioRebornGit
             Content.RootDirectory = "Content";
             allNotMenuObjects = new List<GameObject>();
             allMenuObjects = new List<GameObject>();
+            mrioInventoryCells = new List<ItemCell>();
             isInPause = false;
             isEscpWasPressed = false;
         }
@@ -112,7 +114,12 @@ namespace EndlessMarioRebornGit
             Goomba gmba = new Goomba(gmbaFacingRightTextures, gmbaFacingLeftTextures, flr, 500, new RandomLeftRightStay(), gmbaDeadTxtr, gmbaDeadTxtrFlipped, mrio.Points);
             allNotMenuObjects.Add(mrio);
             allNotMenuObjects.Add(gmba);
-            allMenuObjects.AddRange(crtr.CreateInventoryStrip(bckgrnd.GameWidth));
+            List<GameObject> invntryStrip = crtr.CreateInventoryStrip(bckgrnd.GameWidth);
+            for (int i = 1; i < invntryStrip.Count; i++)
+            {
+                mrioInventoryCells.Add(invntryStrip[i] as ItemCell);
+            }
+            allMenuObjects.AddRange(invntryStrip);
         }
 
         /// <summary>
@@ -182,6 +189,30 @@ namespace EndlessMarioRebornGit
                 {
                     mrioStrategy.SpaceClicked();
                 }
+                if (Keyboard.GetState().IsKeyDown(Keys.D1))
+                {
+                    mrioStrategy.NumClicked(1);
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D2))
+                {
+                    mrioStrategy.NumClicked(2);
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D3))
+                {
+                    mrioStrategy.NumClicked(3);
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D4))
+                {
+                    mrioStrategy.NumClicked(4);
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D5))
+                {
+                    mrioStrategy.NumClicked(5);
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D6))
+                {
+                    mrioStrategy.NumClicked(6);
+                }
                 GameObject newObj = crtr.Create();
                 if (newObj != null)
                 {
@@ -194,6 +225,7 @@ namespace EndlessMarioRebornGit
                         ((MovingObj)gmObj).UpdateFrameStart();
                     }
                 }
+                //Remove the objects that need to be removed
                 for (int i = 0; i < allNotMenuObjects.Count; i++)
                 {
                     GameObject curr = allNotMenuObjects[i];
@@ -202,6 +234,16 @@ namespace EndlessMarioRebornGit
                         //At this case, we will remove the object from the list
                         allNotMenuObjects.RemoveAt(i);
                         i--;
+                    }
+                }
+                //Update mario inventory choice
+                int selectedInd = mrio.CurrCellIndxOfChosenWpn();
+                mrioInventoryCells[selectedInd].Select();
+                for (int i = 0; i < mrioInventoryCells.Count; i++)
+                {
+                    if (i != selectedInd)
+                    {
+                        mrioInventoryCells[i].UnSelect();
                     }
                 }
                 HandleAllCollusions();

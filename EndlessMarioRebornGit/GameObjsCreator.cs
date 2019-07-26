@@ -98,7 +98,6 @@ namespace EndlessMarioRebornGit
                 cnnDeadTxtrFlipped, mrio.Points);
         }
 
-        //TODO: CHECK THIS
         public List<GameObject> CreateInventoryStrip(float gameWindowWidth)
         {
             List<GameObject> toRet = new List<GameObject>();
