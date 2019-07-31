@@ -10,22 +10,13 @@ namespace EndlessMarioRebornGit.Weapons
 {
     abstract class Weapon : GameObject
     {
-
-        //TODO: CHANGE TEXTURES WHILE ATTACK, SET FRAME COUNT
-
-        private Mario mrio;
-        private bool isAttacking;
-        private int framesSinceStartedAttack;
+        private List<Projectile> projectiles;
 
         public Weapon(Texture2D texture, Mario mrio) :
             base(new Vector2(mrio.Right, mrio.Bottom - (mrio.Bottom - mrio.Top)/2), texture, 1, true)
         {
-            isAttacking = false;
+            projectiles = new List<Projectile>();
         }
 
-        public void Attack()
-        {
-            isAttacking = true;
-        }
     }
 }
