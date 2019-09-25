@@ -10,9 +10,17 @@ namespace EndlessMarioRebornGit.ItemsThumbnails
 {
     abstract class ItemThumbnail : GameObject
     {
+        protected float imageDivisorLeftRight;
 
-        public ItemThumbnail(Vector2 loc, Texture2D texture, float scale, bool isCollideAble) : base(loc, texture, scale, isCollideAble) { }
+        //After creation, the main should re-locate the thumbnail in it's place
+        public ItemThumbnail(Texture2D texture, float scale, float imageDivisorLeftRight) : base(new Vector2(0, 0), texture, scale, false)
+        {
+            this.imageDivisorLeftRight = imageDivisorLeftRight;
+        }
 
-        public abstract GameObject CreateItemOfThisThumbnail();
+        public float ImageDivisorLeftRight
+        {
+            get { return imageDivisorLeftRight; }
+        }
     }
 }

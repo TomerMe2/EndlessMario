@@ -35,6 +35,11 @@ namespace EndlessMarioRebornGit.Strategies
             AddToCommands(new ChestSwitchCommand());
         }
 
+        public void Sclicked()
+        {
+            AddToCommands(new ShootCommand());
+        }
+
         //TODO: MAKE IT SAFE WHILE ATTACKING
         public void NumClicked(int num)
         {

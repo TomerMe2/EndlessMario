@@ -6,6 +6,9 @@ using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Monsters;
 using EndlessMarioRebornGit.StillObjects;
 using EndlessMarioRebornGit.MenuItems;
+using EndlessMarioRebornGit.Weapons;
+using EndlessMarioRebornGit.ItemsThumbnails;
+using System.Linq;
 
 namespace EndlessMarioRebornGit
 {
@@ -109,7 +112,7 @@ namespace EndlessMarioRebornGit
             {
                 gmbaFacingLeftTextures.Add(Content.Load<Texture2D>(assetName));
             }
-            Texture2D gmbaDeadTxtr = Content.Load<Texture2D>( Goomba.deadTextureNm);
+            Texture2D gmbaDeadTxtr = Content.Load<Texture2D>(Goomba.deadTextureNm);
             Texture2D gmbaDeadTxtrFlipped = Content.Load<Texture2D>(Goomba.deadTextureFlippedNm);
             Goomba gmba = new Goomba(gmbaFacingRightTextures, gmbaFacingLeftTextures, flr, 500, new RandomLeftRightStay(), gmbaDeadTxtr, gmbaDeadTxtrFlipped, mrio.Points);
             allNotMenuObjects.Add(mrio);
@@ -120,6 +123,16 @@ namespace EndlessMarioRebornGit
                 mrioInventoryCells.Add(invntryStrip[i] as ItemCell);
             }
             allMenuObjects.AddRange(invntryStrip);
+            Texture2D pstlFacingRight = Content.Load<Texture2D>(Pistol.textureNameFacingRight);
+            Texture2D pstlFacingLeft = Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
+            Texture2D bulletFacingRight = Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+            Texture2D bulletFacingLeft = Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+            Pistol tempPstl = new Pistol(pstlFacingRight, pstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            mrio.AddWeaponToInv(tempPstl, 1);
+            Texture2D akFacingRight = Content.Load<Texture2D>(AK47.textureNameFacingRight);
+            Texture2D akFacingLeft = Content.Load<Texture2D>(AK47.textureNameFacingLeft);
+            AK47 tempAK47 = new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            mrio.AddWeaponToInv(tempAK47, 2);
         }
 
         /// <summary>
@@ -134,22 +147,6 @@ namespace EndlessMarioRebornGit
         private void PauseOrUnpause()
         {
             isInPause = !isInPause;
-            //int indxOfBlackScreen = -1;
-            //for (int i = 0; i < allNotMenuObjects.Count; i++)
-            //{
-            //    if (allNotMenuObjects[i] is BlackScreen)
-            //    {
-            //        indxOfBlackScreen = i;
-            //        break;
-            //    }
-            //}
-            //if (allNotMenuObjects[allNotMenuObjects.Count - 1] is Mario)
-            //{
-            //    allNotMenuObjects[allNotMenuObjects.Count - 1] = allNotMenuObjects[allNotMenuObjects.Count - 2];
-            //    allNotMenuObjects[allNotMenuObjects.Count - 1] = mrio;
-            //}
-            //allNotMenuObjects[indxOfBlackScreen] = allNotMenuObjects[allNotMenuObjects.Count - 1];
-            //allNotMenuObjects[allNotMenuObjects.Count - 1] = blkScrn;
             blkScrn.HideOrShow();
         }
 
@@ -177,6 +174,11 @@ namespace EndlessMarioRebornGit
             }
             if (!isInPause)
             {
+                List<ItemThumbnail> thmbnails = GetListOfThumbnails();
+                for (int i = 0; i < mrioInventoryCells.Count; i++)
+                {
+                    mrioInventoryCells[i].HoldingThumbnail = thmbnails[i];
+                }
                 if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
                     mrioStrategy.RightArrowClicked();
@@ -212,6 +214,10 @@ namespace EndlessMarioRebornGit
                 else if (Keyboard.GetState().IsKeyDown(Keys.D6))
                 {
                     mrioStrategy.NumClicked(6);
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.S))
+                {
+                    mrioStrategy.Sclicked();
                 }
                 GameObject newObj = crtr.Create();
                 if (newObj != null)
@@ -259,6 +265,16 @@ namespace EndlessMarioRebornGit
                     PauseOrUnpause();
                 }
                 bckgrnd.BackgroundUpate(mrio.SpeedX);
+                //Add the projectile that mario shot this round - if he shot one
+                if (mrio.ShotThisFrame != null)
+                {
+                    allNotMenuObjects.Add(mrio.ShotThisFrame);
+                }
+                List<ItemThumbnail> thmbNails = mrio.WpnsInventory.Select(wpn => wpn == null ? null : wpn.GetThumbnail()).ToList();
+                for (int i = 0; i < mrioInventoryCells.Count; i++)
+                {
+                    mrioInventoryCells[i].HoldingThumbnail = thmbNails[i];
+                }
             }
             base.Update(gameTime);
         }
@@ -291,7 +307,22 @@ namespace EndlessMarioRebornGit
                 {
                     continue;
                 }
+                //if it's mario, we should draw it's weapon to
+                //it's here bacuse the weapon should be almost in the same depth as mrio (it should be behind him)
+                if (obj is Mario && mrio.CurrWeapon() != null)
+                {
+                    Weapon wpn = mrio.CurrWeapon();
+                    spriteBatch.Draw(wpn.CurrentTexture, wpn.Loc, null, Color.White, 0f, new Vector2(0, 0), wpn.Scale, SpriteEffects.None, 0f);
+                }
                 spriteBatch.Draw(obj.CurrentTexture, obj.Loc, null, Color.White, 0f, new Vector2(0, 0), obj.Scale, SpriteEffects.None, 0f);
+            }
+            //draws the thumbnails inside the inventory cells up in the screen
+            foreach (ItemCell cl in mrioInventoryCells)
+            {
+                if (cl.HoldingThumbnail != null)
+                {
+                    spriteBatch.Draw(cl.HoldingThumbnail.CurrentTexture, cl.HoldingThumbnail.Loc, null, Color.White, 0f, new Vector2(0, 0), cl.HoldingThumbnail.Scale, SpriteEffects.None, 0f);
+                }
             }
             spriteBatch.DrawString(fntForPauseOrDeath, "POINTS " + (long)mrio.Points, new Vector2(hrt.Left, hrt.Bottom), Color.White);
             if (isInPause)
@@ -328,9 +359,15 @@ namespace EndlessMarioRebornGit
             }
         }
 
+        private List<ItemThumbnail> GetListOfThumbnails()
+        {
+            return mrio.WpnsInventory.Select(wpn => wpn == null ? null : wpn.GetThumbnail()).ToList();
+        }
+
         public float GetGameWindowWidth()
         {
             return bckgrnd.GameWidth;
         }
+        
     }
 }

@@ -66,5 +66,18 @@ namespace EndlessMarioRebornGit.StillObjects
             return textureChosenNames[index - 1];
         }
 
+        public ItemThumbnail HoldingThumbnail
+        {
+            get { return holdingThumbnail; }
+            set
+            {
+                holdingThumbnail = value;
+                if (holdingThumbnail != null)
+                {
+                    holdingThumbnail.Loc = new Vector2(this.Left, this.Top + (this.Bottom - this.Top)/holdingThumbnail.ImageDivisorLeftRight);
+                }
+            }
+        }
+
     }
 }

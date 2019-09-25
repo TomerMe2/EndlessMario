@@ -32,9 +32,10 @@ namespace EndlessMarioRebornGit
         private bool hasLost;
         private float distanceAcc;
         private float lastXtoRaisePoints;
-        private Weapon[] WpnsInventory;
+        private Weapon[] wpnsInventory;
         private int currWpnInd;
         private Chest focousedChest;
+        private Projectile shotThisFrame;
         
 
         public static string[] texturesNameFacingRight = { @"Mario\MarioStand", @"Mario\MarioWalk1", @"Mario\MarioWalk2", @"Mario\MarioWalk3", @"Mario\MarioJump" };
@@ -49,9 +50,10 @@ namespace EndlessMarioRebornGit
             points = 0;
             distanceAcc = 0;
             lastXtoRaisePoints = 0;
-            WpnsInventory = new Weapon[INVENTORY_SIZE];
+            wpnsInventory = new Weapon[INVENTORY_SIZE];
             currWpnInd = 0;
             focousedChest = null;
+            shotThisFrame = null;
         }
 
         public override void UpdateFrameStart()
@@ -74,6 +76,7 @@ namespace EndlessMarioRebornGit
                     needToBeDraw = true;
                 }
             }
+            shotThisFrame = null;
             base.UpdateFrameStart();
         }
 
@@ -81,6 +84,10 @@ namespace EndlessMarioRebornGit
         protected override void UpdateSpeedEndOfFrame()
         {
             loc.Y = loc.Y + speedY;
+            if (CurrWeapon() != null)
+            {
+                CurrWeapon().UpdateEndOfFrame();
+            }
         }
 
         protected override void HandleCollusion(CannonBomb other, List<Direction> dirs)
@@ -96,7 +103,7 @@ namespace EndlessMarioRebornGit
                 if ((dirs.Count == 1 && dirs[0] == Direction.Up || dirs.Count == 2 && dirs[1] == Direction.Up) && other.Loc.Y + other.CurrentTexture.Height * other.Scale > Loc.Y + CurrentTexture.Height * Scale)
                 {
                     other.HitMnstr(this);
-                    JumpProtected(JUMP_POWER_AFTER_HIT_ENEMY);   //Mario should jump after hitting a monster
+                    JumpProtected(JUMP_POWER_AFTER_HIT_ENEMY, Physics.GRAVITY);   //Mario should jump after hitting a monster
                 }
                 else
                 {
@@ -125,6 +132,15 @@ namespace EndlessMarioRebornGit
             }
         }
 
+        protected override void HandleCommand(ShootCommand shootCmnd)
+        {
+            Weapon wpn = CurrWeapon();
+            if (wpn != null && wpn is RangedWeapon)
+            {
+                shotThisFrame = (wpn as RangedWeapon).Shoot();
+            }
+        }
+
         protected override void HandleCommand(ChestSwitchCommand chstSwtchCmnd)
         {
             if (focousedChest == null)  //there's no focused chest
@@ -144,17 +160,17 @@ namespace EndlessMarioRebornGit
             }
         }
 
-        protected override void HandleCommand(InventorySwitchCommand chstSwtchCmnd)
+        protected override void HandleCommand(InventorySwitchCommand invSwtchCmnd)
         {
-            currWpnInd = chstSwtchCmnd.NumOfItem - 1;
+            currWpnInd = invSwtchCmnd.NumOfItem - 1;
         }
 
         /// <summary>
         /// CAN RETURN NULL!
         /// </summary>
-        public Weapon GetCurrWeapon()
+        public Weapon CurrWeapon()
         {
-            return WpnsInventory[currWpnInd];
+            return wpnsInventory[currWpnInd];
         }
 
         /// <summary>
@@ -164,6 +180,13 @@ namespace EndlessMarioRebornGit
         {
             return currWpnInd;
         }
+
+        //ONLY FOR DEBUG. ITS BRAKING THE ENCAPSULATION!
+        public void AddWeaponToInv(Weapon wpn, int indx)
+        {
+            wpnsInventory[indx] = wpn;
+        }
+
 
         /// <summary>
         /// Mario is killed instantly by that monster
@@ -197,9 +220,50 @@ namespace EndlessMarioRebornGit
         {
             get { return points; }
         }
+
         public bool HasLost
         {
             get { return hasLost; }
+        }
+
+        public Projectile ShotThisFrame
+        {
+            get { return shotThisFrame; }
+        }
+
+        public List<Weapon> WpnsInventory
+        {
+            get { return new List<Weapon>(wpnsInventory); }
+        }
+
+        public int GetTextureNum()
+        {
+            if (!isFlipped)
+            {
+                for (int i = 0; i < texturesFacingRight.Count; i++)
+                {
+                    if (currentTexture == texturesFacingRight[i])
+                    {
+                        return i;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < texturesFacingLeft.Count; i++)
+                {
+                    if (currentTexture == texturesFacingLeft[i])
+                    {
+                        return i;
+                    }
+                }
+            }
+            return 0; //never happends
+        }
+
+        public bool IsFacingRight()
+        {
+            return !isFlipped;
         }
     }
 }

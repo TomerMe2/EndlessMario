@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 
 namespace EndlessMarioRebornGit.Strategies
 {
-    class AlwaysLeftStrategy : Strategy
+    class AlwaysStayStrategy : Strategy
     {
+        public AlwaysStayStrategy()
+        {
+
+        }
 
         public override List<Command> GetCommands()
         {
-            return new List<Command> { new MoveLeftCommand()};
+            return new List<Command>();
         }
-
     }
 }
