@@ -201,9 +201,9 @@ namespace EndlessMarioRebornGit
             hasLost = true;
         }
 
-        public Chest ChestToDisplay()
+        public Chest ChestToDisplay
         {
-            return focousedChest;
+            get{ return focousedChest; }
         }
 
         public void AddPointsFromDistance()

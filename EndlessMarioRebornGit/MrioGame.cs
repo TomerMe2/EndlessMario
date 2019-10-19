@@ -23,6 +23,7 @@ namespace EndlessMarioRebornGit
         private List<GameObject> allNotMenuObjects;
         private List<GameObject> allMenuObjects;
         private List<ItemCell> mrioInventoryCells;
+        private ItemCell[] chestWpnsCells;
         private BlackScreen blkScrn;
         private bool isInPause;
         private bool isEscpWasPressed;
@@ -38,6 +39,7 @@ namespace EndlessMarioRebornGit
             allNotMenuObjects = new List<GameObject>();
             allMenuObjects = new List<GameObject>();
             mrioInventoryCells = new List<ItemCell>();
+            chestWpnsCells = new ItemCell[Chest.ITEMS_NUM_IN_CHEST];
             isInPause = false;
             isEscpWasPressed = false;
         }
@@ -174,10 +176,22 @@ namespace EndlessMarioRebornGit
             }
             if (!isInPause)
             {
-                List<ItemThumbnail> thmbnails = GetListOfThumbnails();
+                List<ItemThumbnail> inventoryThumbnails = GetListOfInventoryThumbnails();
                 for (int i = 0; i < mrioInventoryCells.Count; i++)
                 {
-                    mrioInventoryCells[i].HoldingThumbnail = thmbnails[i];
+                    mrioInventoryCells[i].HoldingThumbnail = inventoryThumbnails[i];   //update the inventory thumbnails on screen
+                }
+                List<ItemThumbnail> chestThumbnail = GetListOfChestThumbnails();
+                if (chestThumbnail.Count > 0)
+                {
+                    for (int i = 0; i < chestWpnsCells.Length; i++)
+                    {
+                        chestWpnsCells[i].HoldingThumbnail = chestThumbnail[i];
+                    }
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                {
+                    mrioStrategy.EnterClicked();
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
@@ -219,6 +233,30 @@ namespace EndlessMarioRebornGit
                 {
                     mrioStrategy.Sclicked();
                 }
+                else if (Keyboard.GetState().IsKeyDown(Keys.Q))
+                {
+                    mrioStrategy.CharClicked('Q');
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.W))
+                {
+                    mrioStrategy.CharClicked('W');
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.E))
+                {
+                    mrioStrategy.CharClicked('E');
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.R))
+                {
+                    mrioStrategy.CharClicked('R');
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.T))
+                {
+                    mrioStrategy.CharClicked('T');
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.Y))
+                {
+                    mrioStrategy.CharClicked('Y');
+                }
                 GameObject newObj = crtr.Create();
                 if (newObj != null)
                 {
@@ -243,14 +281,12 @@ namespace EndlessMarioRebornGit
                     }
                 }
                 //Update mario inventory choice
-                int selectedInd = mrio.CurrCellIndxOfChosenWpn();
-                mrioInventoryCells[selectedInd].Select();
-                for (int i = 0; i < mrioInventoryCells.Count; i++)
+                SelectCorrectCell(mrio.CurrCellIndxOfChosenWpn(), mrioInventoryCells);
+                //Update chest inventory choice if needed
+                Chest chst = mrio.ChestToDisplay;
+                if (chst != null)
                 {
-                    if (i != selectedInd)
-                    {
-                        mrioInventoryCells[i].UnSelect();
-                    }
+                    SelectCorrectCell(chst.SelectedWpnIndx, chestWpnsCells);
                 }
                 HandleAllCollusions();
                 foreach (GameObject gmObj in allNotMenuObjects)
@@ -270,10 +306,11 @@ namespace EndlessMarioRebornGit
                 {
                     allNotMenuObjects.Add(mrio.ShotThisFrame);
                 }
-                List<ItemThumbnail> thmbNails = mrio.WpnsInventory.Select(wpn => wpn == null ? null : wpn.GetThumbnail()).ToList();
+                //TODO: FIND OUT WHY IS IT HERE. I THINK I SHOULD REMOVE THIS CODE!
+                List<ItemThumbnail> invntryThmbNails = mrio.WpnsInventory.Select(wpn => wpn == null ? null : wpn.GetThumbnail()).ToList();
                 for (int i = 0; i < mrioInventoryCells.Count; i++)
                 {
-                    mrioInventoryCells[i].HoldingThumbnail = thmbNails[i];
+                    mrioInventoryCells[i].HoldingThumbnail = invntryThmbNails[i];
                 }
             }
             base.Update(gameTime);
@@ -359,15 +396,38 @@ namespace EndlessMarioRebornGit
             }
         }
 
-        private List<ItemThumbnail> GetListOfThumbnails()
+        private List<ItemThumbnail> GetListOfInventoryThumbnails()
         {
             return mrio.WpnsInventory.Select(wpn => wpn == null ? null : wpn.GetThumbnail()).ToList();
+        }
+
+        private List<ItemThumbnail> GetListOfChestThumbnails()
+        {
+            if (mrio.ChestToDisplay != null)
+            {
+                return mrio.ChestToDisplay.Wpns.Select(wpn => wpn == null ? null : wpn.GetThumbnail()).ToList();
+            }
+            return new List<ItemThumbnail>();
+        }
+
+        private void SelectCorrectCell(int cellIndx, IList<ItemCell> cells)
+        {
+            cells[cellIndx].Select();
+            for (int i = 0; i < cells.Count; i++)
+            {
+                if (i != cellIndx)
+                {
+                    cells[i].UnSelect();
+                }
+            }
         }
 
         public float GetGameWindowWidth()
         {
             return bckgrnd.GameWidth;
         }
+
+        
         
     }
 }

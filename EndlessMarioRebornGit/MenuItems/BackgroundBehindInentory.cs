@@ -13,8 +13,8 @@ namespace EndlessMarioRebornGit.MenuItems
         public static string textureName = "BehindInventoryCells";
         public const float SCALE = 0.6f;
 
-        public BackgroundBehindInentory(Texture2D texture, float xLoc) :
-            base(new Vector2(xLoc, 0), texture, SCALE, false)
+        public BackgroundBehindInentory(Texture2D texture, float xLoc, float yLoc) :
+            base(new Vector2(xLoc, yLoc), texture, SCALE, false)
         {
 
         }

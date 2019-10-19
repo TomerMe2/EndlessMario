@@ -17,15 +17,17 @@ namespace EndlessMarioRebornGit.StillObjects
         private Texture2D closeTxtr;
         private Texture2D openTxtr;
         private bool isOpen;
-        private ItemCell[] cells;
+        private Weapon[] wpns;
+        private int selectedWpnIndx;
 
-        public Chest(Texture2D textureClosed, Texture2D textureOpen, float locX, float scale, ItemCell[] cells) :
+        public Chest(Texture2D textureClosed, Texture2D textureOpen, float locX, float scale, Weapon[] wpns) :
             base(new Vector2(locX, Physics.FLOOR_LOC - textureClosed.Height * scale), textureClosed, scale, true)
         {
             closeTxtr = textureClosed;
             openTxtr = textureOpen;
             isOpen = false;
-            this.cells = cells;
+            this.wpns = wpns;
+            selectedWpnIndx = 0;
         }
 
         private void Open()
@@ -55,6 +57,33 @@ namespace EndlessMarioRebornGit.StillObjects
             }
         }
 
+        public Weapon GetAndMoveSelectedWpn()
+        {
+            Weapon wpn = wpns[selectedWpnIndx];
+            wpns[selectedWpnIndx] = null;
+            return wpn;
+        }
+        
 
+        /// <summary>
+        /// Selects the weapon with the given index
+        /// </summary>
+        public void SelectWeapon(int weaponIndx)
+        {
+            if (weaponIndx >= 0 && weaponIndx < wpns.Length)
+            {
+                selectedWpnIndx = weaponIndx;
+            }
+        }
+
+        public int SelectedWpnIndx
+        {
+            get { return selectedWpnIndx; }
+        }
+
+        public Weapon[] Wpns
+        {
+            get { return wpns; }
+        }
     }
 }

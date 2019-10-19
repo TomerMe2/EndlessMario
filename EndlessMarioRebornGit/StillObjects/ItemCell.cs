@@ -13,21 +13,32 @@ namespace EndlessMarioRebornGit.StillObjects
     {
         public const float SCALE = 1;
 
-        private int cellNum;
+        private int cellChar;
         private bool isSelected;
         private ItemThumbnail holdingThumbnail;
         private Texture2D textureNotSelected;
         private Texture2D textureSelected;
 
+        private static Dictionary<char, string> textureNormalNames = new Dictionary<char, string>()
+        {   {'1', @"ItemCells\Cell1" },
+            {'2', @"ItemCells\Cell2" },
+            {'3', @"ItemCells\Cell3" },
+            {'4', @"ItemCells\Cell4" },
+            {'5', @"ItemCells\Cell5" },
+            {'6', @"ItemCells\Cell6" } };
 
-        private static string[] textureNormalNames = { @"ItemCells\Cell1", @"ItemCells\Cell2", @"ItemCells\Cell3", @"ItemCells\Cell4", @"ItemCells\Cell5", @"ItemCells\Cell6"};
-        private static string[] textureChosenNames = { @"ItemCells\Cell1Chosen", @"ItemCells\Cell2Chosen", @"ItemCells\Cell3Chosen", @"ItemCells\Cell4Chosen",
-            @"ItemCells\Cell5Chosen", @"ItemCells\Cell6Chosen" };
+        private static Dictionary<char, string> textureChosenNames = new Dictionary<char, string>()
+        {   {'1', @"ItemCells\Cell1Chosen" },
+            {'2', @"ItemCells\Cell2Chosen" },
+            {'3', @"ItemCells\Cell3Chosen" },
+            {'4', @"ItemCells\Cell4Chosen" },
+            {'5', @"ItemCells\Cell5Chosen" },
+            {'6', @"ItemCells\Cell6Chosen" } };
 
-        public ItemCell(Texture2D textureNotSelected, Texture2D textureSelected, float locX, float locY, int cellNum) :
+        public ItemCell(Texture2D textureNotSelected, Texture2D textureSelected, float locX, float locY, char cellChar) :
             base(new Vector2(locX, locY), textureNotSelected, SCALE, false)
         {
-            this.cellNum = cellNum;
+            this.cellChar = cellChar;
             holdingThumbnail = null;
             this.textureNotSelected = textureNotSelected;
             this.textureSelected = textureSelected;
@@ -45,25 +56,23 @@ namespace EndlessMarioRebornGit.StillObjects
             CurrentTexture = textureNotSelected;
         }
 
-        public static int GetNumOfCells()
+        public static char GetLastNumericCellKey()
         {
-            return textureNormalNames.Length;
+            return textureNormalNames.Keys.Where(key => Char.IsDigit(key)).OrderBy(key => key).Last();
         }
 
-        /// <summary>
-        /// index is from 1 to GetNumOfCells() included
-        /// </summary>
-        public static string GetCellTextureNormalName(int index)
+        public static char GetLastAlphabeticalCellKey()
         {
-            return textureNormalNames[index - 1];
+            return textureNormalNames.Keys.Where(key => Char.IsLetter(key)).OrderBy(key => key).Last();
+        }
+        public static string GetCellTextureNormalName(char key)
+        {
+            return textureNormalNames[key];
         }
 
-        /// <summary>
-        /// index is from 1 to GetNumOfCells() included
-        /// </summary>
-        public static string GetCellTextureSelectedName(int index)
+        public static string GetCellTextureSelectedName(char key)
         {
-            return textureChosenNames[index - 1];
+            return textureChosenNames[key];
         }
 
         public ItemThumbnail HoldingThumbnail

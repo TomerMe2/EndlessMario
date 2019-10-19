@@ -57,8 +57,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Background.cs" />
+    <Compile Include="Commands\ChestCellSwitchCommand.cs" />
     <Compile Include="Commands\InventorySwitchCommand.cs" />
     <Compile Include="Commands\ShootCommand.cs" />
+    <Compile Include="Commands\SwitchInventoryAndChestCommand.cs" />
     <Compile Include="ItemsThumbnails\AK47Thumbnail.cs" />
     <Compile Include="ItemsThumbnails\PistolThumbnail.cs" />
     <Compile Include="MenuItems\BackgroundBehindInentory.cs" />

@@ -49,6 +49,36 @@ namespace EndlessMarioRebornGit.Strategies
             }
         }
 
+        public void CharClicked(char chr)
+        {
+            switch (chr)
+            {
+                case 'Q':
+                    AddToCommands(new ChestCellSwitchCommand(1));
+                    break;
+                case 'W':
+                    AddToCommands(new ChestCellSwitchCommand(2));
+                    break;
+                case 'E':
+                    AddToCommands(new ChestCellSwitchCommand(3));
+                    break;
+                case 'R':
+                    AddToCommands(new ChestCellSwitchCommand(4));
+                    break;
+                case 'T':
+                    AddToCommands(new ChestCellSwitchCommand(5));
+                    break;
+                case 'Y':
+                    AddToCommands(new ChestCellSwitchCommand(6));
+                    break;
+            }            
+        }
+
+        public void EnterClicked()
+        {
+            AddToCommands(new SwitchInventoryAndChestCommand());
+        }
+
         /// <summary>
         /// This Stategy uses only one list, and not a queue. That is because commands need to be in real time.
         /// </summary>
