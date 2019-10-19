@@ -47,7 +47,7 @@ namespace EndlessMarioRebornGit.Weapons
         protected override void HandleCollusion(GameObject other, List<Direction> dirs)
         {
             base.HandleCollusion(other, dirs);
-            isNeedDisposal = true;
+            //isNeedDisposal = true;
         }
 
         protected override void HandleCollusion(Monster other, List<Direction> dirs)

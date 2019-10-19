@@ -23,10 +23,13 @@ namespace EndlessMarioRebornGit
         private List<GameObject> allNotMenuObjects;
         private List<GameObject> allMenuObjects;
         private List<ItemCell> mrioInventoryCells;
+        private List<GameObject> chestStrip;
         private ItemCell[] chestWpnsCells;
         private BlackScreen blkScrn;
         private bool isInPause;
         private bool isEscpWasPressed;
+        private bool isBwasPressed;
+        private bool isEnterWasPressed;
         private SpriteFont fntForPauseOrDeath;
         private GameObjsCreator crtr;
 
@@ -42,6 +45,7 @@ namespace EndlessMarioRebornGit
             chestWpnsCells = new ItemCell[Chest.ITEMS_NUM_IN_CHEST];
             isInPause = false;
             isEscpWasPressed = false;
+            isBwasPressed = false;
         }
 
         /// <summary>
@@ -125,6 +129,11 @@ namespace EndlessMarioRebornGit
                 mrioInventoryCells.Add(invntryStrip[i] as ItemCell);
             }
             allMenuObjects.AddRange(invntryStrip);
+            chestStrip = crtr.CreateChestInvStrip(bckgrnd.GameWidth, bckgrnd.GameHeight);
+            for (int i = 1; i < chestStrip.Count; i++)
+            {
+                chestWpnsCells[i - 1] = chestStrip[i] as ItemCell;
+            }
             Texture2D pstlFacingRight = Content.Load<Texture2D>(Pistol.textureNameFacingRight);
             Texture2D pstlFacingLeft = Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
             Texture2D bulletFacingRight = Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
@@ -135,6 +144,13 @@ namespace EndlessMarioRebornGit
             Texture2D akFacingLeft = Content.Load<Texture2D>(AK47.textureNameFacingLeft);
             AK47 tempAK47 = new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
             mrio.AddWeaponToInv(tempAK47, 2);
+
+            Texture2D chestClosed = Content.Load<Texture2D>(Chest.textureNameClosed);
+            Texture2D chestOpen = Content.Load<Texture2D>(Chest.textureNameOpen);
+            Weapon[] chestInv = new Weapon[Chest.ITEMS_NUM_IN_CHEST];
+            chestInv[3] = new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            Chest chst = new Chest(chestClosed, chestOpen, 600, 1f, chestInv);
+            allNotMenuObjects.Add(chst);
         }
 
         /// <summary>
@@ -189,11 +205,25 @@ namespace EndlessMarioRebornGit
                         chestWpnsCells[i].HoldingThumbnail = chestThumbnail[i];
                     }
                 }
+                if (Keyboard.GetState().IsKeyDown(Keys.B))
+                {
+                    isBwasPressed = true;
+                }
+                else if (isBwasPressed && Keyboard.GetState().IsKeyUp(Keys.B))
+                {
+                    isBwasPressed = false;
+                    mrioStrategy.Bclicked();
+                }
                 if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                 {
+                    isEnterWasPressed = true;
+                }
+                else if (isEnterWasPressed && Keyboard.GetState().IsKeyUp(Keys.Enter))
+                {
+                    isEnterWasPressed = false;
                     mrioStrategy.EnterClicked();
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                else if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
                     mrioStrategy.RightArrowClicked();
                 }
@@ -359,6 +389,20 @@ namespace EndlessMarioRebornGit
                 if (cl.HoldingThumbnail != null)
                 {
                     spriteBatch.Draw(cl.HoldingThumbnail.CurrentTexture, cl.HoldingThumbnail.Loc, null, Color.White, 0f, new Vector2(0, 0), cl.HoldingThumbnail.Scale, SpriteEffects.None, 0f);
+                }
+            }
+            if (mrio.ChestToDisplay != null)
+            {
+                foreach (GameObject chestInvObj in chestStrip)
+                {
+                    spriteBatch.Draw(chestInvObj.CurrentTexture, chestInvObj.Loc, null, Color.White, 0f, new Vector2(0, 0), chestInvObj.Scale, SpriteEffects.None, 0f);
+                }
+                foreach (ItemCell cl in chestWpnsCells)
+                {
+                    if (cl.HoldingThumbnail != null)
+                    {
+                        spriteBatch.Draw(cl.HoldingThumbnail.CurrentTexture, cl.HoldingThumbnail.Loc, null, Color.White, 0f, new Vector2(0, 0), cl.HoldingThumbnail.Scale, SpriteEffects.None, 0f);
+                    }
                 }
             }
             spriteBatch.DrawString(fntForPauseOrDeath, "POINTS " + (long)mrio.Points, new Vector2(hrt.Left, hrt.Bottom), Color.White);

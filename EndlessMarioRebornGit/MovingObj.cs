@@ -9,6 +9,7 @@ using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Commands;
 using EndlessMarioRebornGit.StillObjects;
 using EndlessMarioRebornGit.Monsters;
+using EndlessMarioRebornGit.Weapons;
 
 namespace EndlessMarioRebornGit
 {
@@ -369,6 +370,16 @@ namespace EndlessMarioRebornGit
 
         }
 
+        protected virtual void HandleCommand(ChestCellSwitchCommand chstCellSwtchCmnd)
+        {
+
+        }
+
+        protected virtual void HandleCommand(SwitchInventoryAndChestCommand swtchInvAndChstCmnd)
+        {
+
+        }
+
         protected virtual void HandleCommand(InventorySwitchCommand chstSwtchCmnd)
         {
 
@@ -534,8 +545,6 @@ namespace EndlessMarioRebornGit
         {
             collidesWithNow.Add(other);
         }
-
-
 
         /// <summary>
         /// Flip the object

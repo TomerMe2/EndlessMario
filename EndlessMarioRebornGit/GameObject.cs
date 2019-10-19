@@ -143,6 +143,7 @@ namespace EndlessMarioRebornGit
 
         protected virtual void HandleCollusion(Weapon other, List<Direction> dirs) { }
 
+
         private bool CheckCollusionRight(float otherLeft)
         {
             return (otherLeft <= this.Right && otherLeft >= this.Left);

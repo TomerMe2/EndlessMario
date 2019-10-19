@@ -100,10 +100,10 @@ namespace EndlessMarioRebornGit
 
         public List<GameObject> CreateInventoryStrip(float gameWindowWidth)
         {
-            return CreateStrip(gameWindowWidth, 0, '1', ItemCell.GetLastNumericCellKey());
+            return CreateStrip(gameWindowWidth, 0, ItemCell.textureNumercialNormalNames, ItemCell.textureNumericalChosenNames);
         }
 
-        private List<GameObject> CreateStrip(float gameWindowWidth, float yLoc, char from, char to)
+        private List<GameObject> CreateStrip(float gameWindowWidth, float yLoc, string[] txtrNmsNormal, string[] txtNmsChosen)
         {
             List<GameObject> toRet = new List<GameObject>();
             Texture2D txtrForBkrnd = gm.Content.Load<Texture2D>(BackgroundBehindInentory.textureName);
@@ -111,32 +111,33 @@ namespace EndlessMarioRebornGit
             toRet.Add(bkrnd);
             float breaksBetweenCells = 0;
             float yLocForInnerCell = 0;
-            for (char i = from; i <= to; i++)
+            for (int i = 1; i <= txtrNmsNormal.Length; i++)
             {
-                Texture2D txtrOfCellSelected = gm.Content.Load<Texture2D>(ItemCell.GetCellTextureSelectedName(i));
-                Texture2D txtOfCellNotSelected = gm.Content.Load<Texture2D>(ItemCell.GetCellTextureNormalName(i));
+                Texture2D txtrOfCellSelected = gm.Content.Load<Texture2D>(txtNmsChosen[i - 1]);
+                Texture2D txtOfCellNotSelected = gm.Content.Load<Texture2D>(txtrNmsNormal[i - 1]);
                 if (breaksBetweenCells == 0)
                 {
-                    float sumOfCellsWidth = to * txtrOfCellSelected.Width;
-                    breaksBetweenCells = (txtrForBkrnd.Width * BackgroundBehindInentory.SCALE - sumOfCellsWidth) / (ItemCell.GetLastNumericCellKey() + 1);
+                    float sumOfCellsWidth = txtrNmsNormal.Length * txtrOfCellSelected.Width;
+                    breaksBetweenCells = (txtrForBkrnd.Width * BackgroundBehindInentory.SCALE - sumOfCellsWidth) / (txtrNmsNormal.Length + 1);
                     yLocForInnerCell = bkrnd.Top + ((bkrnd.Bottom - bkrnd.Top) - txtOfCellNotSelected.Height * ItemCell.SCALE) / 2;
                 }
                 float xLoc = bkrnd.Left + breaksBetweenCells * i + (i - 1) * txtrOfCellSelected.Width;
-                ItemCell cl = new ItemCell(txtOfCellNotSelected, txtrOfCellSelected, xLoc, yLocForInnerCell, i);
+                ItemCell cl = new ItemCell(txtOfCellNotSelected, txtrOfCellSelected, xLoc, yLocForInnerCell, txtrNmsNormal[i - 1].Last());
                 toRet.Add(cl);
-                if (i == from)
+                if (i == 1)
                 {
                     cl.Select();
                 }
             }
             return toRet;
         }
+
         public List<GameObject> CreateChestInvStrip(float gameWindowWidth, float gameWidnowHeight)
         {
             Texture2D txtrForBkrnd = gm.Content.Load<Texture2D>(BackgroundBehindInentory.textureName);
-            return CreateStrip(gameWindowWidth, gameWidnowHeight / 2 - txtrForBkrnd.Height * BackgroundBehindInentory.SCALE / 2, 'A', 'D');
+            return CreateStrip(gameWindowWidth, gameWidnowHeight / 2 - txtrForBkrnd.Height * BackgroundBehindInentory.SCALE / 2, ItemCell.textureAlphabeticalNormalName, 
+                ItemCell.textureAlphabeticalChosenName);
         }
-
 
         private List<Texture2D> GetTexturesForList(string[] assetsName)
         {

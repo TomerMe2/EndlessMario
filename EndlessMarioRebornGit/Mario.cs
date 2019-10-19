@@ -88,6 +88,10 @@ namespace EndlessMarioRebornGit
             {
                 CurrWeapon().UpdateEndOfFrame();
             }
+            if (focousedChest != null && !collidesWithNow.Contains(focousedChest))
+            {
+                focousedChest = null;
+            }
         }
 
         protected override void HandleCollusion(CannonBomb other, List<Direction> dirs)
@@ -160,10 +164,29 @@ namespace EndlessMarioRebornGit
             }
         }
 
+        protected override void HandleCommand(ChestCellSwitchCommand chstCellSwtchCmnd)
+        {
+            if (focousedChest != null)
+            {
+                focousedChest.SelectWeapon(chstCellSwtchCmnd.NumOfItem - 1);
+            }
+        }
+
+        protected override void HandleCommand(SwitchInventoryAndChestCommand swtchInvAndChstCmnd)
+        {
+            if (focousedChest != null)
+            {
+                Weapon currInv = wpnsInventory[currWpnInd];
+                wpnsInventory[currWpnInd] = focousedChest.ReplaceSelectWpn(currInv);
+            }
+        }
+
         protected override void HandleCommand(InventorySwitchCommand invSwtchCmnd)
         {
             currWpnInd = invSwtchCmnd.NumOfItem - 1;
         }
+
+        
 
         /// <summary>
         /// CAN RETURN NULL!

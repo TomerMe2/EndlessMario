@@ -57,10 +57,10 @@ namespace EndlessMarioRebornGit.StillObjects
             }
         }
 
-        public Weapon GetAndMoveSelectedWpn()
+        public Weapon ReplaceSelectWpn(Weapon toReplaceWith)
         {
             Weapon wpn = wpns[selectedWpnIndx];
-            wpns[selectedWpnIndx] = null;
+            wpns[selectedWpnIndx] = toReplaceWith;
             return wpn;
         }
         
