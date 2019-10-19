@@ -8,6 +8,7 @@ using EndlessMarioRebornGit.Strategies;
 using Microsoft.Xna.Framework.Graphics;
 using EndlessMarioRebornGit.StillObjects;
 using EndlessMarioRebornGit.MenuItems;
+using EndlessMarioRebornGit.Weapons;
 
 namespace EndlessMarioRebornGit
 {
@@ -47,7 +48,12 @@ namespace EndlessMarioRebornGit
                 progressFee = progressFee < 0 ? 0 : progressFee;
                 double randDbl = rndm.NextDouble();
                 lastX = startPipe.Left;
-                return randDbl < 0.3 + progressFee ? CreateGoomba() :
+                if (randDbl < 0.05)
+                {
+                    bool deb = true;
+                }
+                return randDbl < 0.05 ? CreateChest() :
+                    randDbl < 0.3 + progressFee ? CreateGoomba() :
                     randDbl < 0.6 ? (GameObject)CreateCannonBomb() :
                     CreatePipe();
             }
@@ -87,6 +93,42 @@ namespace EndlessMarioRebornGit
             return new CannonBomb(GetTexturesForList(CannonBomb.texturesNameFacingRight),
                 GetTexturesForList(CannonBomb.texturesNameFacingLeft), flr, 1000, randInt, cnnDeadTxtr,
                 cnnDeadTxtrFlipped, mrio.Points);
+        }
+
+        private Chest CreateChest()
+        {
+            AK47 CreateAK47()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D akFacingRight = gm.Content.Load<Texture2D>(AK47.textureNameFacingRight);
+                Texture2D akFacingLeft = gm.Content.Load<Texture2D>(AK47.textureNameFacingLeft);
+                return new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
+            Pistol CreatePistol()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D pstlFacingRight = gm.Content.Load<Texture2D>(Pistol.textureNameFacingRight);
+                Texture2D pstlFacingLeft = gm.Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
+                return new Pistol(pstlFacingRight, pstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
+            Texture2D chestClosed = gm.Content.Load<Texture2D>(Chest.textureNameClosed);
+            Texture2D chestOpen = gm.Content.Load<Texture2D>(Chest.textureNameOpen);
+            Weapon[] chestInv = new Weapon[Chest.ITEMS_NUM_IN_CHEST];
+            for (int i = 0; i < chestInv.Length; i++)
+            {
+                double rndDub = rndm.NextDouble();
+                if (rndDub < 0.1)
+                {
+                    chestInv[i] = CreateAK47();
+                }
+                else if (rndDub < 0.2)
+                {
+                    chestInv[i] = CreatePistol();
+                }
+            }
+            return new Chest(chestClosed, chestOpen, 1000, 1f, chestInv);
         }
 
         public HugeCannonBomb CreateHugeCannonBomb()

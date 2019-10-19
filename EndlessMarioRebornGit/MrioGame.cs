@@ -144,13 +144,6 @@ namespace EndlessMarioRebornGit
             Texture2D akFacingLeft = Content.Load<Texture2D>(AK47.textureNameFacingLeft);
             AK47 tempAK47 = new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
             mrio.AddWeaponToInv(tempAK47, 2);
-
-            Texture2D chestClosed = Content.Load<Texture2D>(Chest.textureNameClosed);
-            Texture2D chestOpen = Content.Load<Texture2D>(Chest.textureNameOpen);
-            Weapon[] chestInv = new Weapon[Chest.ITEMS_NUM_IN_CHEST];
-            chestInv[3] = new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
-            Chest chst = new Chest(chestClosed, chestOpen, 600, 1f, chestInv);
-            allNotMenuObjects.Add(chst);
         }
 
         /// <summary>
@@ -391,7 +384,7 @@ namespace EndlessMarioRebornGit
                     spriteBatch.Draw(cl.HoldingThumbnail.CurrentTexture, cl.HoldingThumbnail.Loc, null, Color.White, 0f, new Vector2(0, 0), cl.HoldingThumbnail.Scale, SpriteEffects.None, 0f);
                 }
             }
-            if (mrio.ChestToDisplay != null)
+            if (!isInPause && !mrio.HasLost && mrio.ChestToDisplay != null)
             {
                 foreach (GameObject chestInvObj in chestStrip)
                 {

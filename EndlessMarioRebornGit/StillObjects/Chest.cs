@@ -33,12 +33,14 @@ namespace EndlessMarioRebornGit.StillObjects
         private void Open()
         {
             CurrentTexture = openTxtr;
+            Loc = new Vector2(Loc.X, Physics.FLOOR_LOC - openTxtr.Height * scale);     //update Y
             isOpen = true;
         }
 
         private void Close()
         {
             CurrentTexture = closeTxtr;
+            Loc = new Vector2(Loc.X, Physics.FLOOR_LOC - closeTxtr.Height * scale);     //update Y
             isOpen = false;
         }
 

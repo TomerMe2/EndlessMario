@@ -90,6 +90,7 @@ namespace EndlessMarioRebornGit
             }
             if (focousedChest != null && !collidesWithNow.Contains(focousedChest))
             {
+                focousedChest.SwitchChestState();    //close it
                 focousedChest = null;
             }
         }
@@ -154,12 +155,14 @@ namespace EndlessMarioRebornGit
                     if (obj is Chest)
                     {
                         focousedChest = obj as Chest;
+                        focousedChest.SwitchChestState();   //open it
                         break;
                     }
                 }
             }
             else   //there's a focused chest
             {
+                focousedChest.SwitchChestState();   //close it
                 focousedChest = null;
             }
         }
