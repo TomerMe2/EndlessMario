@@ -69,7 +69,8 @@ namespace EndlessMarioRebornGit.StillObjects
                 holdingThumbnail = value;
                 if (holdingThumbnail != null)
                 {
-                    holdingThumbnail.Loc = new Vector2(this.Left, this.Top + (this.Bottom - this.Top)/holdingThumbnail.ImageDivisorLeftRight);
+                    holdingThumbnail.Loc = new Vector2(this.Left + (this.Right - this.Left - (holdingThumbnail.Right - holdingThumbnail.Left)) / 2,
+                        this.Top + (this.Bottom - this.Top)/holdingThumbnail.ImageDivisorLeftRight);
                 }
             }
         }

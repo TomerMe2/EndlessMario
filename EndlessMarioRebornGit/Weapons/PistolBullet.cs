@@ -11,8 +11,8 @@ namespace EndlessMarioRebornGit.Weapons
 {
     class PistolBullet : Projectile
     {
-        public static string textureNameFacingRight = @"Pistol\PistolBulletFacingRight";
-        public static string textureNameFacingLeft = @"Pistol\PistolBulletFacingLeft";
+        public static string textureNameFacingRight = @"Weapons\Pistol\PistolBulletFacingRight";
+        public static string textureNameFacingLeft = @"Weapons\Pistol\PistolBulletFacingLeft";
 
         public const float MASS = 0.05f;
 
