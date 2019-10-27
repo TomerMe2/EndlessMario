@@ -144,6 +144,14 @@ namespace EndlessMarioRebornGit
             Texture2D akFacingLeft = Content.Load<Texture2D>(AK47.textureNameFacingLeft);
             AK47 tempAK47 = new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
             mrio.AddWeaponToInv(tempAK47, 2);
+            Texture2D bigPstlFacingRight = Content.Load<Texture2D>(BigPistol.textureNameFacingRight);
+            Texture2D bigPstlFacingLeft = Content.Load<Texture2D>(BigPistol.textureNameFacingLeft);
+            BigPistol tempBigPistol = new BigPistol(bigPstlFacingRight, bigPstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            mrio.AddWeaponToInv(tempBigPistol, 3);
+            Texture2D uziFacingRight = Content.Load<Texture2D>(Uzi.textureNameFacingRight);
+            Texture2D uziFacingLeft = Content.Load<Texture2D>(Uzi.textureNameFacingLeft);
+            Uzi tempUzi = new Uzi(uziFacingRight, uziFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            mrio.AddWeaponToInv(tempUzi, 4);
         }
 
         /// <summary>

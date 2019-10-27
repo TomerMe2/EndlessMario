@@ -11,8 +11,8 @@ namespace EndlessMarioRebornGit.Weapons
 {
     class AK47 : RangedWeapon
     {
-        public static string textureNameFacingRight = @"AK47\AK47FacingRight";
-        public static string textureNameFacingLeft = @"AK47\AK47FacingLeft";
+        public static string textureNameFacingRight = @"Weapons\AK47\AK47FacingRight";
+        public static string textureNameFacingLeft = @"Weapons\AK47\AK47FacingLeft";
         public const float SHOOTING_POWER = 28f;
         public const int FRAMES_BEFORE_NEXT_SHOT = 60;
         public const int MAX_BULLETS_PER_BURST = 3;

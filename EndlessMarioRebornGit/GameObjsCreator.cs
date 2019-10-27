@@ -113,19 +113,43 @@ namespace EndlessMarioRebornGit
                 Texture2D pstlFacingLeft = gm.Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
                 return new Pistol(pstlFacingRight, pstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
             }
+            BigPistol CreateBigPistol()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D bgPstlFacingRight = gm.Content.Load<Texture2D>(BigPistol.textureNameFacingRight);
+                Texture2D bgPstlFacingLeft = gm.Content.Load<Texture2D>(BigPistol.textureNameFacingLeft);
+                return new BigPistol(bgPstlFacingRight, bgPstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
+            Uzi CreateUzi()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D uziFacingRight = gm.Content.Load<Texture2D>(Pistol.textureNameFacingRight);
+                Texture2D uziFacingLeft = gm.Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
+                return new Uzi(uziFacingRight, uziFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
             Texture2D chestClosed = gm.Content.Load<Texture2D>(Chest.textureNameClosed);
             Texture2D chestOpen = gm.Content.Load<Texture2D>(Chest.textureNameOpen);
             Weapon[] chestInv = new Weapon[Chest.ITEMS_NUM_IN_CHEST];
             for (int i = 0; i < chestInv.Length; i++)
             {
                 double rndDub = rndm.NextDouble();
-                if (rndDub < 0.1)
+                if (rndDub < 0.05)
                 {
                     chestInv[i] = CreateAK47();
                 }
-                else if (rndDub < 0.2)
+                else if (rndDub < 0.1)
                 {
                     chestInv[i] = CreatePistol();
+                }
+                else if (rndDub < 0.15)
+                {
+                    chestInv[i] = CreateBigPistol();
+                }
+                else if (rndDub < 0.2)
+                {
+                    chestInv[i] = CreateUzi();
                 }
             }
             return new Chest(chestClosed, chestOpen, 1000, 1f, chestInv);

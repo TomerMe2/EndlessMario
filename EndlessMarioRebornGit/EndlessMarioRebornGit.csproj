@@ -62,7 +62,9 @@
     <Compile Include="Commands\ShootCommand.cs" />
     <Compile Include="Commands\SwitchInventoryAndChestCommand.cs" />
     <Compile Include="ItemsThumbnails\AK47Thumbnail.cs" />
+    <Compile Include="ItemsThumbnails\BigPistolThumbnail.cs" />
     <Compile Include="ItemsThumbnails\PistolThumbnail.cs" />
+    <Compile Include="ItemsThumbnails\UziThumbnail.cs" />
     <Compile Include="MenuItems\BackgroundBehindInentory.cs" />
     <Compile Include="MenuItems\BlackScreen.cs" />
     <Compile Include="Commands\ChestSwitchCommand.cs" />
@@ -96,10 +98,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartingFlag.cs" />
     <Compile Include="Weapons\AK47.cs" />
+    <Compile Include="Weapons\BigPistol.cs" />
     <Compile Include="Weapons\Pistol.cs" />
     <Compile Include="Weapons\PistolBullet.cs" />
     <Compile Include="Weapons\Projectile.cs" />
     <Compile Include="Weapons\RangedWeapon.cs" />
+    <Compile Include="Weapons\Uzi.cs" />
     <Compile Include="Weapons\Weapon.cs" />
   </ItemGroup>
   <ItemGroup>

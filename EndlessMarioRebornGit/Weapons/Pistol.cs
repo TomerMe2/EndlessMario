@@ -11,8 +11,8 @@ namespace EndlessMarioRebornGit.Weapons
 {
     class Pistol : RangedWeapon
     {
-        public static string textureNameFacingRight = @"Pistol\PistolFacingRight";
-        public static string textureNameFacingLeft = @"Pistol\PistolFacingLeft";
+        public static string textureNameFacingRight = @"Weapons\Pistol\PistolFacingRight";
+        public static string textureNameFacingLeft = @"Weapons\Pistol\PistolFacingLeft";
         public const float SHOOTING_POWER = 20f;
         public const int FRAMES_BEFORE_NEXT_SHOT = 50;
 
