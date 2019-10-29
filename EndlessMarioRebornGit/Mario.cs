@@ -105,7 +105,9 @@ namespace EndlessMarioRebornGit
             base.HandleCollusion(other, dirs);
             if (!other.IsDead)
             {
-                if ((dirs.Count == 1 && dirs[0] == Direction.Up || dirs.Count == 2 && dirs[1] == Direction.Up) && other.Loc.Y + other.CurrentTexture.Height * other.Scale > Loc.Y + CurrentTexture.Height * Scale)
+                if (SpeedY > 0
+                    && (dirs.Count == 1 && dirs[0] == Direction.Up || dirs.Count == 2 && dirs[1] == Direction.Up)
+                    && other.Loc.Y + other.CurrentTexture.Height * other.Scale > Loc.Y + CurrentTexture.Height * Scale)
                 {
                     other.HitMnstr(this);
                     JumpProtected(JUMP_POWER_AFTER_HIT_ENEMY, Physics.GRAVITY);   //Mario should jump after hitting a monster

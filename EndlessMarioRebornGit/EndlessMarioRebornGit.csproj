@@ -61,6 +61,7 @@
     <Compile Include="Commands\InventorySwitchCommand.cs" />
     <Compile Include="Commands\ShootCommand.cs" />
     <Compile Include="Commands\SwitchInventoryAndChestCommand.cs" />
+    <Compile Include="FloatRectangle.cs" />
     <Compile Include="ItemsThumbnails\AK47Thumbnail.cs" />
     <Compile Include="ItemsThumbnails\BigPistolThumbnail.cs" />
     <Compile Include="ItemsThumbnails\PistolThumbnail.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="ItemsThumbnails\ItemThumbnail.cs" />
     <Compile Include="Monsters\CannonBomb.cs" />
     <Compile Include="Monsters\Goomba.cs" />
+    <Compile Include="Monsters\GreenTurtle.cs" />
     <Compile Include="Monsters\HugeCannonBomb.cs" />
     <Compile Include="Monsters\Monster.cs" />
     <Compile Include="StillObjects\Chest.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="Strategies\AlwaysLeftStrategy.cs" />
     <Compile Include="Strategies\AlwaysStayStrategy.cs" />
     <Compile Include="Strategies\AlwaysRightStrategy.cs" />
+    <Compile Include="Strategies\OnceLeftRightStrategy.cs" />
     <Compile Include="Strategies\RandomLeftRightStay.cs" />
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Strategies\UserMarioMovingStrategy.cs" />
@@ -97,6 +100,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartingFlag.cs" />
+    <Compile Include="GreenTurtleShield.cs" />
     <Compile Include="Weapons\AK47.cs" />
     <Compile Include="Weapons\BigPistol.cs" />
     <Compile Include="Weapons\Pistol.cs" />

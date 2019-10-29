@@ -110,7 +110,12 @@ namespace EndlessMarioRebornGit
             {
                 if (!isJumping)
                 {
+                    float legsYLoc = Bottom;
                     HandleTextureChangesInWalking();
+                    //In order to keep the legs on the ground when the new texture is with different height
+                    float newYLoc = Top + (legsYLoc - Bottom);
+                    Loc = new Vector2(Left, newYLoc);
+
                 }
                 else
                 {
@@ -546,6 +551,11 @@ namespace EndlessMarioRebornGit
             collidesWithNow.Add(other);
         }
 
+        protected override void HandleCollusion(GreenTurtleShield other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
+
         /// <summary>
         /// Flip the object
         /// Keeps the same texture, but makes it flipped
@@ -592,6 +602,11 @@ namespace EndlessMarioRebornGit
         public GameObject PrevSarfuce
         {
             get { return prevSarfuce; }
+        }
+
+        public bool isFacingRight
+        {
+            get { return !isFlipped; }
         }
     }
 }

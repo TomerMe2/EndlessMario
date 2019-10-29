@@ -48,14 +48,14 @@ namespace EndlessMarioRebornGit
                 progressFee = progressFee < 0 ? 0 : progressFee;
                 double randDbl = rndm.NextDouble();
                 lastX = startPipe.Left;
-                if (randDbl < 0.05)
-                {
-                    bool deb = true;
-                }
-                return randDbl < 0.05 ? CreateChest() :
+                GameObject created = randDbl < 0.05 ? CreateChest() :
                     randDbl < 0.3 + progressFee ? CreateGoomba() :
+                    randDbl < 0.5 + progressFee ? CreateGreenTurtle() :
                     randDbl < 0.6 ? (GameObject)CreateCannonBomb() :
                     CreatePipe();
+
+                return gm.ObjectsInRect(new FloatRectangle(created.Left, created.Right, created.Top, created.Bottom)) ? 
+                    null : created;
             }
             return null;
         }
@@ -74,7 +74,14 @@ namespace EndlessMarioRebornGit
             int randInt = rndm.Next(950, 1050);
             return new Goomba(GetTexturesForList(Goomba.texturesNameFacingRight),
                 GetTexturesForList(Goomba.texturesNameFacingLeft), flr, randInt, new RandomLeftRightStay(),
-                gmbaDeadTxtr, gmbaDeadTxtrFlipped, 0);
+                gmbaDeadTxtr, gmbaDeadTxtrFlipped, mrio.Points);
+        }
+
+        private GreenTurtle CreateGreenTurtle()
+        {
+            int randInt = rndm.Next(950, 1050);
+            return new GreenTurtle(GetTexturesForList(GreenTurtle.texturesNameFacingRight),
+                GetTexturesForList(GreenTurtle.texturesNameFacingLeft), flr, randInt, new RandomLeftRightStay(), mrio.Points);
         }
 
         private CannonBomb CreateCannonBomb()
@@ -125,8 +132,8 @@ namespace EndlessMarioRebornGit
             {
                 Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
                 Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
-                Texture2D uziFacingRight = gm.Content.Load<Texture2D>(Pistol.textureNameFacingRight);
-                Texture2D uziFacingLeft = gm.Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
+                Texture2D uziFacingRight = gm.Content.Load<Texture2D>(Uzi.textureNameFacingRight);
+                Texture2D uziFacingLeft = gm.Content.Load<Texture2D>(Uzi.textureNameFacingLeft);
                 return new Uzi(uziFacingRight, uziFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
             }
             Texture2D chestClosed = gm.Content.Load<Texture2D>(Chest.textureNameClosed);
@@ -162,6 +169,22 @@ namespace EndlessMarioRebornGit
             return new HugeCannonBomb(GetTexturesForList(HugeCannonBomb.texturesNameFacingRight),
                 GetTexturesForList(HugeCannonBomb.texturesNameFacingLeft), flr, -500, cnnDeadTxtr,
                 cnnDeadTxtrFlipped, mrio.Points);
+        }
+
+        /// <summary>
+        /// Returns the shield of the given turtle
+        /// </summary>
+        /// <param name="trtl"></param>
+        /// <returns></returns>
+        public GreenTurtleShield CreateShield(GreenTurtle trtl)
+        {
+            Texture2D txtrShield = gm.Content.Load<Texture2D>(GreenTurtleShield.textureNameFacingRight);
+            Texture2D txtShieldFlipped = gm.Content.Load<Texture2D>(GreenTurtleShield.textureNameFacingLeft);
+            List<Texture2D> txtrsShield = new List<Texture2D>(){ txtrShield, txtrShield, txtrShield, txtrShield };
+            List<Texture2D> txtrsShieldFlipped = new List<Texture2D>() { txtShieldFlipped, txtShieldFlipped, txtShieldFlipped,
+                txtShieldFlipped };
+            GreenTurtleShield shld = new GreenTurtleShield(txtrsShield, txtrsShieldFlipped, flr, trtl.Left, new OnceLeftRightStrategy(), trtl);
+            return shld;
         }
 
         public List<GameObject> CreateInventoryStrip(float gameWindowWidth)

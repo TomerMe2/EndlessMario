@@ -18,7 +18,6 @@ namespace EndlessMarioRebornGit.Monsters
         private Texture2D deadTexture;
         private Texture2D deadTextureFlipped;
 
-
         public Monster(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Vector2 startLoc, float scale, bool isCollideAble, float walkingPower,
           float jumpingPower, float maxSpeed, Floor flr, Strategy strtgy, Texture2D deadTexture, Texture2D deadTextureFlipped) : base(texturesFacingRight, texturesFacingLeft, startLoc, scale, isCollideAble,
               walkingPower, jumpingPower, maxSpeed, flr, strtgy)
@@ -40,7 +39,7 @@ namespace EndlessMarioRebornGit.Monsters
             base.HandleCollusion(other, dirs);
             if (!isDead)
             {
-                if (dirs.Contains(Direction.Down) && other.Loc.Y + other.CurrentTexture.Height * Scale < Loc.Y + CurrentTexture.Height * Scale)
+                if (other.SpeedY > 0 && dirs.Contains(Direction.Down) && other.Loc.Y + other.CurrentTexture.Height * Scale < Loc.Y + CurrentTexture.Height * Scale)
                 {
                     HitMnstr(other);
                 }
@@ -51,13 +50,26 @@ namespace EndlessMarioRebornGit.Monsters
             }
         }
 
+        protected override void HandleCollusion(GreenTurtleShield other, List<Direction> dirs)
+        {
+            base.HandleCollusion(other, dirs);
+            if (other.SpeedX != 0)
+            {
+                HitMnstr(null);
+            }
+        }
+
         /// <summary>
         /// This monster is being hit by mario.
+        /// mrio can be null
         /// </summary>
         public void HitMnstr(Mario mrio)
         {
             Die();
-            mrio.AddPointsFromKillingMonster();
+            if (mrio != null)
+            {
+                mrio.AddPointsFromKillingMonster();
+            }
         }
 
         protected virtual void Die()
@@ -66,7 +78,10 @@ namespace EndlessMarioRebornGit.Monsters
             {
                 framesFromDeath = 0;
                 isDead = true;
-                currentTexture = isFlipped ? deadTextureFlipped : deadTexture;
+                if (deadTexture != null && deadTextureFlipped != null)
+                {
+                    currentTexture = isFlipped ? deadTextureFlipped : deadTexture;
+                }
                 Loc = new Vector2(Loc.X, Physics.FLOOR_LOC - currentTexture.Height * scale);
             }
         }

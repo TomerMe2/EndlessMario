@@ -143,6 +143,8 @@ namespace EndlessMarioRebornGit
 
         protected virtual void HandleCollusion(Weapon other, List<Direction> dirs) { }
 
+        protected virtual void HandleCollusion(GreenTurtleShield other, List<Direction> dirs) { }
+
 
         private bool CheckCollusionRight(float otherLeft)
         {

@@ -293,8 +293,15 @@ namespace EndlessMarioRebornGit
                 {
                     allNotMenuObjects.Add(newObj);
                 }
-                foreach (GameObject gmObj in allNotMenuObjects)
+                for (int i = 0; i < allNotMenuObjects.Count; i++)
                 {
+                    GameObject gmObj = allNotMenuObjects[i];
+                    if (gmObj is GreenTurtle && (gmObj as GreenTurtle).IsDead)
+                    {
+                        //Replace the turtle with it's shield
+                        gmObj = crtr.CreateShield(gmObj as GreenTurtle);
+                        allNotMenuObjects[i] = gmObj;
+                    }
                     if (gmObj is MovingObj)
                     {
                         ((MovingObj)gmObj).UpdateFrameStart();
@@ -472,7 +479,23 @@ namespace EndlessMarioRebornGit
             return bckgrnd.GameWidth;
         }
 
-        
-        
+        /// <summary>
+        /// Return true iff there are objects in the given rectangle
+        /// </summary>
+        public bool ObjectsInRect(FloatRectangle checkOn)
+        {
+            foreach (GameObject inGame in allNotMenuObjects)
+            {
+                FloatRectangle recForObj = new FloatRectangle(inGame.Left, inGame.Right, inGame.Top, inGame.Bottom);
+                if (recForObj.Intersects(checkOn))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+
     }
 }
