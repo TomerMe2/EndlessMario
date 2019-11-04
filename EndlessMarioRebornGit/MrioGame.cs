@@ -134,24 +134,6 @@ namespace EndlessMarioRebornGit
             {
                 chestWpnsCells[i - 1] = chestStrip[i] as ItemCell;
             }
-            Texture2D pstlFacingRight = Content.Load<Texture2D>(Pistol.textureNameFacingRight);
-            Texture2D pstlFacingLeft = Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
-            Texture2D bulletFacingRight = Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
-            Texture2D bulletFacingLeft = Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
-            Pistol tempPstl = new Pistol(pstlFacingRight, pstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
-            mrio.AddWeaponToInv(tempPstl, 1);
-            Texture2D akFacingRight = Content.Load<Texture2D>(AK47.textureNameFacingRight);
-            Texture2D akFacingLeft = Content.Load<Texture2D>(AK47.textureNameFacingLeft);
-            AK47 tempAK47 = new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
-            mrio.AddWeaponToInv(tempAK47, 2);
-            Texture2D bigPstlFacingRight = Content.Load<Texture2D>(BigPistol.textureNameFacingRight);
-            Texture2D bigPstlFacingLeft = Content.Load<Texture2D>(BigPistol.textureNameFacingLeft);
-            BigPistol tempBigPistol = new BigPistol(bigPstlFacingRight, bigPstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
-            mrio.AddWeaponToInv(tempBigPistol, 3);
-            Texture2D uziFacingRight = Content.Load<Texture2D>(Uzi.textureNameFacingRight);
-            Texture2D uziFacingLeft = Content.Load<Texture2D>(Uzi.textureNameFacingLeft);
-            Uzi tempUzi = new Uzi(uziFacingRight, uziFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
-            mrio.AddWeaponToInv(tempUzi, 4);
         }
 
         /// <summary>
@@ -413,7 +395,10 @@ namespace EndlessMarioRebornGit
                     }
                 }
             }
-            spriteBatch.DrawString(fntForPauseOrDeath, "POINTS " + (long)mrio.Points, new Vector2(hrt.Left, hrt.Bottom), Color.White);
+            string mrioPointsToDisplay = mrio.Points > 1000000 ? (long)mrio.Points / 1000000 + "M" :
+                mrio.Points > 10000 ? (long)mrio.Points / 1000 + "K" :
+                (long)mrio.Points + "";
+            spriteBatch.DrawString(fntForPauseOrDeath, "POINTS " + mrioPointsToDisplay, new Vector2(hrt.Left, hrt.Bottom), Color.White);
             if (isInPause)
             {
                 if (mrio.HasLost)
