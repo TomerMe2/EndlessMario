@@ -30,9 +30,53 @@ namespace EndlessMarioRebornGit.Strategies
             AddToCommands(new JumpCommand());
         }
 
-        public void ChestSwitchClicked()
+        public void Bclicked()
         {
             AddToCommands(new ChestSwitchCommand());
+        }
+
+        public void Sclicked()
+        {
+            AddToCommands(new ShootCommand());
+        }
+
+        //TODO: MAKE IT SAFE WHILE ATTACKING
+        public void NumClicked(int num)
+        {
+            if (num >= 1 && num <= 6)
+            {
+                AddToCommands(new InventorySwitchCommand(num));
+            }
+        }
+
+        public void CharClicked(char chr)
+        {
+            switch (chr)
+            {
+                case 'Q':
+                    AddToCommands(new ChestCellSwitchCommand(1));
+                    break;
+                case 'W':
+                    AddToCommands(new ChestCellSwitchCommand(2));
+                    break;
+                case 'E':
+                    AddToCommands(new ChestCellSwitchCommand(3));
+                    break;
+                case 'R':
+                    AddToCommands(new ChestCellSwitchCommand(4));
+                    break;
+                case 'T':
+                    AddToCommands(new ChestCellSwitchCommand(5));
+                    break;
+                case 'Y':
+                    AddToCommands(new ChestCellSwitchCommand(6));
+                    break;
+            }            
+        }
+
+        public void EnterClicked()
+        {
+            AddToCommands(new SwitchInventoryAndChestCommand());
         }
 
         /// <summary>

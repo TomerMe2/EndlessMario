@@ -7,6 +7,8 @@ using EndlessMarioRebornGit.Monsters;
 using EndlessMarioRebornGit.Strategies;
 using Microsoft.Xna.Framework.Graphics;
 using EndlessMarioRebornGit.StillObjects;
+using EndlessMarioRebornGit.MenuItems;
+using EndlessMarioRebornGit.Weapons;
 
 namespace EndlessMarioRebornGit
 {
@@ -46,9 +48,14 @@ namespace EndlessMarioRebornGit
                 progressFee = progressFee < 0 ? 0 : progressFee;
                 double randDbl = rndm.NextDouble();
                 lastX = startPipe.Left;
-                return randDbl < 0.3 + progressFee ? CreateGoomba() :
+                GameObject created = randDbl < 0.05 ? CreateChest() :
+                    randDbl < 0.3 + progressFee ? CreateGoomba() :
+                    randDbl < 0.5 + progressFee ? CreateGreenTurtle() :
                     randDbl < 0.6 ? (GameObject)CreateCannonBomb() :
                     CreatePipe();
+
+                return gm.ObjectsInRect(new FloatRectangle(created.Left, created.Right, created.Top, created.Bottom)) ? 
+                    null : created;
             }
             return null;
         }
@@ -62,12 +69,19 @@ namespace EndlessMarioRebornGit
 
         private Goomba CreateGoomba()
         {
-            Texture2D gmbaDeadTxtr = gm.Content.Load<Texture2D>(@"Goomba\" + Goomba.deadTextureNm);
-            Texture2D gmbaDeadTxtrFlipped = gm.Content.Load<Texture2D>(@"Goomba\" + Goomba.deadTextureFlippedNm);
+            Texture2D gmbaDeadTxtr = gm.Content.Load<Texture2D>(Goomba.deadTextureNm);
+            Texture2D gmbaDeadTxtrFlipped = gm.Content.Load<Texture2D>(Goomba.deadTextureFlippedNm);
             int randInt = rndm.Next(950, 1050);
-            return new Goomba(GetTexturesForList(Goomba.texturesNameFacingRight, @"Goomba\"),
-                GetTexturesForList(Goomba.texturesNameFacingLeft, @"Goomba\"), flr, randInt, new RandomLeftRightStay(),
-                gmbaDeadTxtr, gmbaDeadTxtrFlipped, 0);
+            return new Goomba(GetTexturesForList(Goomba.texturesNameFacingRight),
+                GetTexturesForList(Goomba.texturesNameFacingLeft), flr, randInt, new RandomLeftRightStay(),
+                gmbaDeadTxtr, gmbaDeadTxtrFlipped, mrio.Points);
+        }
+
+        private GreenTurtle CreateGreenTurtle()
+        {
+            int randInt = rndm.Next(950, 1050);
+            return new GreenTurtle(GetTexturesForList(GreenTurtle.texturesNameFacingRight),
+                GetTexturesForList(GreenTurtle.texturesNameFacingLeft), flr, randInt, new RandomLeftRightStay(), mrio.Points);
         }
 
         private CannonBomb CreateCannonBomb()
@@ -83,29 +97,146 @@ namespace EndlessMarioRebornGit
             {
                 randInt = rndm.Next(150, 250);
             }
-            return new CannonBomb(GetTexturesForList(CannonBomb.texturesNameFacingRight, ""),
-                GetTexturesForList(CannonBomb.texturesNameFacingLeft, ""), flr, 1000, randInt, cnnDeadTxtr,
+            return new CannonBomb(GetTexturesForList(CannonBomb.texturesNameFacingRight),
+                GetTexturesForList(CannonBomb.texturesNameFacingLeft), flr, 1000, randInt, cnnDeadTxtr,
                 cnnDeadTxtrFlipped, mrio.Points);
+        }
+
+        private Chest CreateChest()
+        {
+            AK47 CreateAK47()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D akFacingRight = gm.Content.Load<Texture2D>(AK47.textureNameFacingRight);
+                Texture2D akFacingLeft = gm.Content.Load<Texture2D>(AK47.textureNameFacingLeft);
+                return new AK47(akFacingRight, akFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
+            Pistol CreatePistol()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D pstlFacingRight = gm.Content.Load<Texture2D>(Pistol.textureNameFacingRight);
+                Texture2D pstlFacingLeft = gm.Content.Load<Texture2D>(Pistol.textureNameFacingLeft);
+                return new Pistol(pstlFacingRight, pstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
+            BigPistol CreateBigPistol()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D bgPstlFacingRight = gm.Content.Load<Texture2D>(BigPistol.textureNameFacingRight);
+                Texture2D bgPstlFacingLeft = gm.Content.Load<Texture2D>(BigPistol.textureNameFacingLeft);
+                return new BigPistol(bgPstlFacingRight, bgPstlFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
+            Uzi CreateUzi()
+            {
+                Texture2D bulletFacingRight = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingRight);
+                Texture2D bulletFacingLeft = gm.Content.Load<Texture2D>(PistolBullet.textureNameFacingLeft);
+                Texture2D uziFacingRight = gm.Content.Load<Texture2D>(Uzi.textureNameFacingRight);
+                Texture2D uziFacingLeft = gm.Content.Load<Texture2D>(Uzi.textureNameFacingLeft);
+                return new Uzi(uziFacingRight, uziFacingLeft, mrio, flr, bulletFacingRight, bulletFacingLeft);
+            }
+            Texture2D chestClosed = gm.Content.Load<Texture2D>(Chest.textureNameClosed);
+            Texture2D chestOpen = gm.Content.Load<Texture2D>(Chest.textureNameOpen);
+            Weapon[] chestInv = new Weapon[Chest.ITEMS_NUM_IN_CHEST];
+            for (int i = 0; i < chestInv.Length; i++)
+            {
+                double rndDub = rndm.NextDouble();
+                if (rndDub < 0.05)
+                {
+                    chestInv[i] = CreateAK47();
+                }
+                else if (rndDub < 0.1)
+                {
+                    chestInv[i] = CreatePistol();
+                }
+                else if (rndDub < 0.15)
+                {
+                    chestInv[i] = CreateBigPistol();
+                }
+                else if (rndDub < 0.2)
+                {
+                    chestInv[i] = CreateUzi();
+                }
+            }
+            return new Chest(chestClosed, chestOpen, 1000, 1f, chestInv);
         }
 
         public HugeCannonBomb CreateHugeCannonBomb()
         {
             Texture2D cnnDeadTxtr = gm.Content.Load<Texture2D>(HugeCannonBomb.deadTextureNm);
             Texture2D cnnDeadTxtrFlipped = gm.Content.Load<Texture2D>(HugeCannonBomb.deadTextureFlippedNm);
-            return new HugeCannonBomb(GetTexturesForList(HugeCannonBomb.texturesNameFacingRight, ""),
-                GetTexturesForList(HugeCannonBomb.texturesNameFacingLeft, ""), flr, -500, cnnDeadTxtr,
+            return new HugeCannonBomb(GetTexturesForList(HugeCannonBomb.texturesNameFacingRight),
+                GetTexturesForList(HugeCannonBomb.texturesNameFacingLeft), flr, -500, cnnDeadTxtr,
                 cnnDeadTxtrFlipped, mrio.Points);
         }
 
+        /// <summary>
+        /// Returns the shield of the given turtle
+        /// </summary>
+        /// <param name="trtl"></param>
+        /// <returns></returns>
+        public GreenTurtleShield CreateShield(GreenTurtle trtl)
+        {
+            Texture2D txtrShield = gm.Content.Load<Texture2D>(GreenTurtleShield.textureNameFacingRight);
+            Texture2D txtShieldFlipped = gm.Content.Load<Texture2D>(GreenTurtleShield.textureNameFacingLeft);
+            List<Texture2D> txtrsShield = new List<Texture2D>(){ txtrShield, txtrShield, txtrShield, txtrShield };
+            List<Texture2D> txtrsShieldFlipped = new List<Texture2D>() { txtShieldFlipped, txtShieldFlipped, txtShieldFlipped,
+                txtShieldFlipped };
+            GreenTurtleShield shld = new GreenTurtleShield(txtrsShield, txtrsShieldFlipped, flr, trtl.Left, new OnceLeftRightStrategy(), trtl);
+            return shld;
+        }
 
-        private List<Texture2D> GetTexturesForList(string[] assetsName, string prefix)
+        public List<GameObject> CreateInventoryStrip(float gameWindowWidth)
+        {
+            return CreateStrip(gameWindowWidth, 0, ItemCell.textureNumercialNormalNames, ItemCell.textureNumericalChosenNames);
+        }
+
+        private List<GameObject> CreateStrip(float gameWindowWidth, float yLoc, string[] txtrNmsNormal, string[] txtNmsChosen)
+        {
+            List<GameObject> toRet = new List<GameObject>();
+            Texture2D txtrForBkrnd = gm.Content.Load<Texture2D>(BackgroundBehindInentory.textureName);
+            BackgroundBehindInentory bkrnd = new BackgroundBehindInentory(txtrForBkrnd, gm.GetGameWindowWidth() / 2 - txtrForBkrnd.Width * BackgroundBehindInentory.SCALE / 2, yLoc);
+            toRet.Add(bkrnd);
+            float breaksBetweenCells = 0;
+            float yLocForInnerCell = 0;
+            for (int i = 1; i <= txtrNmsNormal.Length; i++)
+            {
+                Texture2D txtrOfCellSelected = gm.Content.Load<Texture2D>(txtNmsChosen[i - 1]);
+                Texture2D txtOfCellNotSelected = gm.Content.Load<Texture2D>(txtrNmsNormal[i - 1]);
+                if (breaksBetweenCells == 0)
+                {
+                    float sumOfCellsWidth = txtrNmsNormal.Length * txtrOfCellSelected.Width;
+                    breaksBetweenCells = (txtrForBkrnd.Width * BackgroundBehindInentory.SCALE - sumOfCellsWidth) / (txtrNmsNormal.Length + 1);
+                    yLocForInnerCell = bkrnd.Top + ((bkrnd.Bottom - bkrnd.Top) - txtOfCellNotSelected.Height * ItemCell.SCALE) / 2;
+                }
+                float xLoc = bkrnd.Left + breaksBetweenCells * i + (i - 1) * txtrOfCellSelected.Width;
+                ItemCell cl = new ItemCell(txtOfCellNotSelected, txtrOfCellSelected, xLoc, yLocForInnerCell, txtrNmsNormal[i - 1].Last());
+                toRet.Add(cl);
+                if (i == 1)
+                {
+                    cl.Select();
+                }
+            }
+            return toRet;
+        }
+
+        public List<GameObject> CreateChestInvStrip(float gameWindowWidth, float gameWidnowHeight)
+        {
+            Texture2D txtrForBkrnd = gm.Content.Load<Texture2D>(BackgroundBehindInentory.textureName);
+            return CreateStrip(gameWindowWidth, gameWidnowHeight / 2 - txtrForBkrnd.Height * BackgroundBehindInentory.SCALE / 2, ItemCell.textureAlphabeticalNormalName, 
+                ItemCell.textureAlphabeticalChosenName);
+        }
+
+        private List<Texture2D> GetTexturesForList(string[] assetsName)
         {
             List<Texture2D> toRet = new List<Texture2D>();
             foreach (string assetName in assetsName)
             {
-                toRet.Add(gm.Content.Load<Texture2D>(prefix + assetName));
+                toRet.Add(gm.Content.Load<Texture2D>(assetName));
             }
             return toRet;
         }
+
     }
 }

@@ -16,9 +16,7 @@ namespace EndlessMarioRebornGit.Strategies
 
         public override List<Command> GetCommands()
         {
-            List<Command> toRet = new List<Command>();
-            toRet.Add(new MoveLeftCommand());
-            return toRet;
+            return new List<Command> { new MoveLeftCommand()};
         }
 
     }

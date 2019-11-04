@@ -9,6 +9,7 @@ using EndlessMarioRebornGit.Strategies;
 using EndlessMarioRebornGit.Commands;
 using EndlessMarioRebornGit.StillObjects;
 using EndlessMarioRebornGit.Monsters;
+using EndlessMarioRebornGit.Weapons;
 
 namespace EndlessMarioRebornGit
 {
@@ -33,7 +34,7 @@ namespace EndlessMarioRebornGit
         private float jumpingPower;
         private float walkingPower;
         private int changingTextureCounter;
-        protected List<GameObject> collidedWithPrevTurn;
+        private List<GameObject> collidedWithPrevTurn;
         protected List<GameObject> collidesWithNow;
         private GameObject sarfuce;
         private GameObject prevSarfuce;
@@ -109,7 +110,12 @@ namespace EndlessMarioRebornGit
             {
                 if (!isJumping)
                 {
+                    float legsYLoc = Bottom;
                     HandleTextureChangesInWalking();
+                    //In order to keep the legs on the ground when the new texture is with different height
+                    float newYLoc = Top + (legsYLoc - Bottom);
+                    Loc = new Vector2(Left, newYLoc);
+
                 }
                 else
                 {
@@ -188,11 +194,19 @@ namespace EndlessMarioRebornGit
             }
         }
 
-        private void HandleNotWalkingSpeed()
+        protected virtual void HandleNotWalkingSpeed()
+        {
+            HandleNotWalkingSpeedMechanics(Physics.FRICTION);   //default for most moving objects
+        }
+
+        /// <summary>
+        /// This method is the rule of handling non walking speed mechanics. It requires friction because some object (such as projectiles) have other friction.
+        /// </summary>
+        protected void HandleNotWalkingSpeedMechanics(float friction)
         {
             if (isFlipped)
             {
-                accelerationX = Physics.FRICTION;
+                accelerationX = friction;
                 speedX = speedX + accelerationX;
                 if (speedX > 0)  //if he is starting to go left
                 {
@@ -202,7 +216,7 @@ namespace EndlessMarioRebornGit
             }
             else
             {
-                accelerationX = -Physics.FRICTION;
+                accelerationX = -friction;
                 speedX = speedX + accelerationX;
                 if (speedX < 0)  //if he is starting to go right
                 {
@@ -289,14 +303,14 @@ namespace EndlessMarioRebornGit
 
             if (!isJumping)   //if it's not jumping alraedy
             {
-                JumpProtected(jumpingPower);
+                JumpProtected(jumpingPower, Physics.GRAVITY);
             }
         }
 
-        protected virtual void JumpProtected(float jumpingPower)
+        protected virtual void JumpProtected(float jumpingPower, float gravity)
         {
             isJumping = true;
-            accelerationY = Physics.GRAVITY;
+            accelerationY = gravity;
             speedY = -jumpingPower + accelerationY;
             UpdateTextureToJumpingFalling();   //Updating the textures
         }
@@ -306,10 +320,18 @@ namespace EndlessMarioRebornGit
         /// </summary>
         protected virtual void Fall()
         {
+            FallMechanism(Physics.GRAVITY);
+        }
+
+        /// <summary>
+        /// This method rules the mechanism for fall, in order to deal with different gravities.
+        /// </summary>
+        protected virtual void FallMechanism(float gravity)
+        {
             if (speedY == 0)   //if it's not falling already
             {
                 isJumping = true;
-                accelerationY = Physics.GRAVITY;
+                accelerationY = gravity;
                 speedY = accelerationY;
                 UpdateTextureToJumpingFalling();    //Updating the textures
             }
@@ -333,27 +355,56 @@ namespace EndlessMarioRebornGit
         }
 
 
-        protected virtual void HandleCommand(MoveLeftCommand lftCmnd)
+        protected void HandleCommand(MoveLeftCommand lftCmnd)
         {
             Walk(Direction.Left);
         }
 
-        protected virtual void HandleCommand(MoveRightCommand rightCmnd)
+        protected void HandleCommand(MoveRightCommand rightCmnd)
         {
             Walk(Direction.Right);
         }
 
-        protected virtual void HandleCommand(JumpCommand jmpCmnd)
+        protected void HandleCommand(JumpCommand jmpCmnd)
         {
             Jump();
         }
 
-        protected virtual void HandleCommand(ChestSwitchCommand openChstCmnd)
+        protected virtual void HandleCommand(ChestSwitchCommand chstSwtchCmnd)
         {
-            
+
         }
 
+        protected virtual void HandleCommand(ChestCellSwitchCommand chstCellSwtchCmnd)
+        {
+
+        }
+
+        protected virtual void HandleCommand(SwitchInventoryAndChestCommand swtchInvAndChstCmnd)
+        {
+
+        }
+
+        protected virtual void HandleCommand(InventorySwitchCommand chstSwtchCmnd)
+        {
+
+        }
+
+        protected virtual void HandleCommand(ShootCommand shootCmnd)
+        {
+
+        }
+
+
         public virtual void Walk(Direction dir)
+        {
+            WalkMechanics(dir, Physics.FRICTION);    //this is the default for most moving objects
+        }
+
+        /// <summary>
+        /// This method is the rule of walking mechanics. It requires friction because some object (such as projectiles) have other friction.
+        /// </summary>
+        protected void WalkMechanics(Direction dir, float friction)
         {
             bool isChangingDir = (dir == Direction.Left && !isFlipped) || (dir == Direction.Right && isFlipped);
             if ((!isWalkingPrevFrame) || (isWalkingPrevFrame && isChangingDir))
@@ -364,12 +415,12 @@ namespace EndlessMarioRebornGit
                 }
                 if (dir == Direction.Right)  //not flipped
                 {
-                    accelerationX = walkingPower - Physics.FRICTION;
+                    accelerationX = walkingPower - friction;
                     isFlipped = false;     //because the obj is facing right
                 }
                 else   //flipped
                 {
-                    accelerationX = -walkingPower + Physics.FRICTION;
+                    accelerationX = -walkingPower + friction;
                     isFlipped = true;       //because the obj is facing left
                 }
             }
@@ -382,9 +433,26 @@ namespace EndlessMarioRebornGit
 
         protected virtual void CollusionWithHardObj(GameObject other, List<Direction> dirs)
         {
+            CollusionWithHardObjMechanism(other, dirs, Physics.GRAVITY);
+        }
+
+
+        /// <summary>
+        /// Rules the mechanism for coullsion with hard object.
+        /// </summary>
+        protected virtual void CollusionWithHardObjMechanism(GameObject other, List<Direction> dirs, float gravity)
+        {
             if (dirs.Count == 0)
             {
                 return;
+            }
+            if (isJumping)
+            {
+                string deb = "deb";
+            }
+            if (dirs.Contains(Direction.Up) && dirs.Contains(Direction.Left))
+            {
+                string deb = "deb";
             }
             if (dirs.Count > 1 && dirs[0] != Direction.Up && dirs.Contains(Direction.Up))
             {
@@ -440,8 +508,8 @@ namespace EndlessMarioRebornGit
             }
             if (dirs.Contains(Direction.Down))
             {
-                speedY = other.Bottom - this.Top - Physics.GRAVITY;    //so it will be only other.Bottom - this.Top after we will add Physics.GRAVITY to it
-                accelerationY = Physics.GRAVITY;
+                speedY = other.Bottom - this.Top - gravity;    //so it will be only other.Bottom - this.Top after we will add GRAVITY to it
+                accelerationY = gravity;
             }
         }
 
@@ -468,7 +536,6 @@ namespace EndlessMarioRebornGit
             collidesWithNow.Add(other);
         }
 
-
         protected override void HandleCollusion(Mario other, List<Direction> dirs)
         {
             collidesWithNow.Add(other);
@@ -484,6 +551,10 @@ namespace EndlessMarioRebornGit
             collidesWithNow.Add(other);
         }
 
+        protected override void HandleCollusion(GreenTurtleShield other, List<Direction> dirs)
+        {
+            collidesWithNow.Add(other);
+        }
 
         /// <summary>
         /// Flip the object
@@ -531,6 +602,11 @@ namespace EndlessMarioRebornGit
         public GameObject PrevSarfuce
         {
             get { return prevSarfuce; }
+        }
+
+        public bool isFacingRight
+        {
+            get { return !isFlipped; }
         }
     }
 }

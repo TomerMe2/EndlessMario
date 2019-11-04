@@ -7,6 +7,8 @@ using EndlessMarioRebornGit.Monsters;
 using EndlessMarioRebornGit.StillObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using EndlessMarioRebornGit.StillObjects;
+using EndlessMarioRebornGit.Weapons;
 
 namespace EndlessMarioRebornGit
 {
@@ -15,6 +17,7 @@ namespace EndlessMarioRebornGit
         protected Vector2 loc;
         protected Texture2D currentTexture;
         protected float scale;
+        protected float angleInRads;  //in radians
         protected bool isCollideAble;
         protected bool isNeedDisposal;
         protected bool needToBeDraw;
@@ -24,6 +27,7 @@ namespace EndlessMarioRebornGit
             this.loc = loc;
             this.currentTexture = texture;
             this.scale = scale;
+            angleInRads = 0;
             this.isCollideAble = isCollideAble;
             isNeedDisposal = false;
             needToBeDraw = true; 
@@ -41,6 +45,12 @@ namespace EndlessMarioRebornGit
         {
             get { return loc; }
             set { loc = value; }
+        }
+
+        virtual public float AngleInRads
+        {
+            get { return angleInRads; }
+            protected set { angleInRads = value; }
         }
 
         public bool NeedToBeDraw
@@ -97,6 +107,24 @@ namespace EndlessMarioRebornGit
             this.loc.X = this.loc.X + howMuch;
         }
 
+        /// <summary>
+        /// Adds howMuchInRads to the current angle
+        /// IF ANGLE IS NOT 0, ALL PHYSICS ENGINE GOES TO HELL
+        /// </summary>
+        public virtual void Rotate(float howMuchInRads)
+        {
+            angleInRads = angleInRads + howMuchInRads;
+            //normalize it
+            while (angleInRads > 2*Math.PI)
+            {
+                angleInRads = angleInRads - (float)(2 * Math.PI);
+            }
+            while (angleInRads < -2 * Math.PI)
+            {
+                angleInRads = angleInRads + (float)(2 * Math.PI);
+            }
+        }
+
         protected virtual void HandleCollusion(GameObject other, List<Direction> dirs) { }
 
         protected virtual void HandleCollusion(Pipe other, List<Direction> dirs) { }
@@ -112,10 +140,14 @@ namespace EndlessMarioRebornGit
 
         protected virtual void HandleCollusion(CannonBomb other, List<Direction> dirs) { }
 
+        protected virtual void HandleCollusion(Weapon other, List<Direction> dirs) { }
+
+        protected virtual void HandleCollusion(GreenTurtleShield other, List<Direction> dirs) { }
+
+
         private bool CheckCollusionRight(float otherLeft)
         {
             return (otherLeft <= this.Right && otherLeft >= this.Left);
-
         }
 
         private bool CheckCollusionLeft(float otherRight)
@@ -148,7 +180,9 @@ namespace EndlessMarioRebornGit
             needToBeDraw = false;
         }
 
-
+        /// <summary>
+        /// Returns the directions of the collusion of other with this and invokes handle collusion
+        /// </summary>
         protected List<Direction> ProtectedCollusion(MovingObj other, float thisLeft, float thisRight, float thisTop, float thisBottom)
         {
             float otherTop = other.Top + other.SpeedY;
@@ -171,8 +205,8 @@ namespace EndlessMarioRebornGit
                 return dirs;
             }
             //other is checking if he is colliding me
-            //check collusion from right
-            if (thisRight > otherLeft && thisLeft <= otherLeft)
+            //check collusion from right, speed must be negative cus other must go right
+            if (other.SpeedX < 0 && thisRight > otherLeft && thisLeft <= otherLeft)
             {
                 //it's in X range of collusion, check Y
                 if (thisTop <= otherTop && thisBottom >= otherBottom)
@@ -193,8 +227,8 @@ namespace EndlessMarioRebornGit
             }
             if (!dirs.Contains(Direction.Right))
             {
-                //check from left
-                if (thisLeft <= otherRight && thisRight >= otherRight)
+                //check from left, speed must be positive cus other must go left
+                if (other.SpeedX > 0 && thisLeft <= otherRight && thisRight >= otherRight)
                 {
                     //it's in X range of collusion, check Y
                     if (thisTop <= otherTop && thisBottom >= otherBottom)
@@ -270,9 +304,70 @@ namespace EndlessMarioRebornGit
                     }
                 }
             }
+            //Checking for a possibilty that "other" was way too fast, and just passed "this" in 1 turn
+            if (dirs.Count == 0)
+            {
+                if (otherBottom <= thisBottom && otherTop >= thisTop)   //if it's in cullosion range in terms of Y axis
+                {
+                    if (other.SpeedX > 0 && thisLeft >= other.Right && thisRight <= otherLeft)     //if other passed this in the turn (the speed has to be positive)
+                    {
+                        dirs = new List<Direction> { Direction.Left };
+                    }
+                    else if (other.SpeedX < 0 && thisRight <= other.Left && thisLeft >= otherRight)
+                    {
+                        dirs = new List<Direction> { Direction.Right };
+                    }
+                }
+            }
             other.HandleCollusion((dynamic)this, dirs);
             return dirs;
         }
+
+        //protected virtual bool PixelCollusion(MovingObj other)
+        //{
+        //    Color[] bitsThis = new Color[currentTexture.Width * currentTexture.Height];
+        //    Color[] bitsOther = new Color[other.currentTexture.Width * other.currentTexture.Height];
+        //    Color[] bitsThisScaled = new Color[RoundUp(currentTexture.Width * currentTexture.Height * scale)];
+        //    Color[] bitsOtherScaled = new Color[RoundUp(other.currentTexture.Width * other.currentTexture.Height * other.scale)];
+        //}
+
+        //private Color[] ScaledClrs(Texture2D txtr, float scale)
+        //{
+        //    //NOT WORKING. FK.
+        //    Color[] clrs = new Color[txtr.Width * txtr.Height];
+        //    int colsInScaled = RoundUp(txtr.Width * scale);
+        //    int rowsInScaled = RoundUp(txtr.Height * scale);
+        //    Color[] scaled = new Color[colsInScaled * rowsInScaled];
+        //    for (int row = 0; row < txtr.Height; row++)
+        //    {
+        //        int rowStartNonTransperent = -1;
+        //        int rowEndNonTransperent = -1;
+        //        for (int col = 0; col < txtr.Width; col++)
+        //        {
+        //            //clrs[row * width + column] how to get to the current cell
+        //            if (rowStartNonTransperent == -1 && clrs[row * txtr.Width + col] != Color.Transparent)
+        //            {
+        //                rowStartNonTransperent = col;
+        //            }
+        //            if (rowStartNonTransperent != -1 && clrs[row * txtr.Width + col] == Color.Transparent)
+        //            {
+        //                rowEndNonTransperent = col;
+        //            }
+        //        }
+        //        for (int currColInScaled = 0; currColInScaled < colsInScaled; currColInScaled++)
+        //        {
+        //            scaled[]
+        //        }
+        //    }
+        //}
+
+        //private int RoundUp(float num)
+        //{
+        //    bool a = num - (int)num > 0;
+        //    int rounded = Convert.ToInt32(num);
+        //    return (num - rounded) > 0 ? rounded + 1 : rounded;
+        //}
+
         /// <summary>
         /// Returns the direction of other realative to this if there's a collusion. Returns Direction.None otherwise
         /// Prefers left/right collusions over up/bottom collusions

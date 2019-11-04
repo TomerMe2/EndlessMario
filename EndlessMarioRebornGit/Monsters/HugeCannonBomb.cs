@@ -22,7 +22,7 @@ namespace EndlessMarioRebornGit.Monsters
 
         public HugeCannonBomb(List<Texture2D> texturesFacingRight, List<Texture2D> texturesFacingLeft, Floor flr, float xLoc, Texture2D deadTxtr, Texture2D deadTxtrFlip, double mrioPointsAtCreation) :
             base(texturesFacingRight, texturesFacingLeft, new Vector2(xLoc, Physics.FLOOR_LOC - texturesFacingLeft.ElementAt(0).Height * CANNON_SCALE), CANNON_SCALE, true,
-                CANNON_ACCELERATION_X, 0, HCANNON_MAX_SPEED,  flr, new AlwaysRightStrategy(), deadTxtr, deadTxtrFlip)
+                CANNON_ACCELERATION_X, 0, HCANNON_MAX_SPEED, flr, new AlwaysRightStrategy(), deadTxtr, deadTxtrFlip)
         {
 
         }
@@ -51,6 +51,6 @@ namespace EndlessMarioRebornGit.Monsters
         }
 
         //We are doing this because the picture of HugeCannonBomb is quite huge
-        public override float Right => base.Right - CurrentTexture.Width/9f;
+        public override float Right => base.Right - CurrentTexture.Width / 9f;
     }
 }

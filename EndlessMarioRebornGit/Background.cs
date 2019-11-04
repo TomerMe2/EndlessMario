@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EndlessMarioRebornGit.MenuObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using EndlessMarioRebornGit.MenuItems;
 
 namespace EndlessMarioRebornGit
 {
