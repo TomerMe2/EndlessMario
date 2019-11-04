@@ -67,7 +67,6 @@
     <Compile Include="ItemsThumbnails\PistolThumbnail.cs" />
     <Compile Include="ItemsThumbnails\UziThumbnail.cs" />
     <Compile Include="MenuItems\BackgroundBehindInentory.cs" />
-    <Compile Include="MenuItems\BlackScreen.cs" />
     <Compile Include="Commands\ChestSwitchCommand.cs" />
     <Compile Include="Floor.cs" />
     <Compile Include="GameObjsCreator.cs" />
@@ -77,6 +76,7 @@
     <Compile Include="Commands\MoveRightCommand.cs" />
     <Compile Include="Heart.cs" />
     <Compile Include="ItemsThumbnails\ItemThumbnail.cs" />
+    <Compile Include="MenuItems\BlackScreen.cs" />
     <Compile Include="Monsters\CannonBomb.cs" />
     <Compile Include="Monsters\Goomba.cs" />
     <Compile Include="Monsters\GreenTurtle.cs" />
