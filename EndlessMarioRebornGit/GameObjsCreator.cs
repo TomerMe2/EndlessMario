@@ -51,7 +51,8 @@ namespace EndlessMarioRebornGit
                 GameObject created = randDbl < 0.05 ? CreateChest() :
                     randDbl < 0.3 + progressFee ? CreateGoomba() :
                     randDbl < 0.5 + progressFee ? CreateGreenTurtle() :
-                    randDbl < 0.6 ? (GameObject)CreateCannonBomb() :
+                    randDbl < 0.6 + progressFee ? CreateFlyingEnemy() :
+                    randDbl < 0.75 ? (GameObject)CreateCannonBomb() :
                     CreatePipe();
 
                 return gm.ObjectsInRect(new FloatRectangle(created.Left, created.Right, created.Top, created.Bottom)) ? 
@@ -100,6 +101,17 @@ namespace EndlessMarioRebornGit
             return new CannonBomb(GetTexturesForList(CannonBomb.texturesNameFacingRight),
                 GetTexturesForList(CannonBomb.texturesNameFacingLeft), flr, 1000, randInt, cnnDeadTxtr,
                 cnnDeadTxtrFlipped, mrio.Points);
+        }
+
+        private FlyingEnemy CreateFlyingEnemy()
+        {
+            Texture2D flyingTxtrFacingRight = gm.Content.Load<Texture2D>(FlyingEnemy.textureNameFacingRight);
+            Texture2D flyingTxtrFacingLeft = gm.Content.Load<Texture2D>(FlyingEnemy.textureNameFacingLeft);
+            Texture2D flyingTxtrDeadRight = gm.Content.Load<Texture2D>(FlyingEnemy.deadTextureNm);
+            Texture2D flyingTxtrDeadLeft = gm.Content.Load<Texture2D>(FlyingEnemy.deadTextureFlippedNm);
+            return new FlyingEnemy(new List<Texture2D>() { flyingTxtrFacingRight, flyingTxtrFacingRight, flyingTxtrFacingRight, flyingTxtrFacingRight },
+                new List<Texture2D>() { flyingTxtrFacingLeft, flyingTxtrFacingLeft, flyingTxtrFacingLeft, flyingTxtrFacingLeft },
+                flr, 1000, new RandomLeftRightUpStay(), flyingTxtrDeadRight, flyingTxtrDeadLeft, mrio.Points);
         }
 
         private Chest CreateChest()

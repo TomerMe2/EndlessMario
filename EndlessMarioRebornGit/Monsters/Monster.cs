@@ -78,11 +78,12 @@ namespace EndlessMarioRebornGit.Monsters
             {
                 framesFromDeath = 0;
                 isDead = true;
+                float bottomBeforeChangeTxtr = Bottom;
                 if (deadTexture != null && deadTextureFlipped != null)
                 {
                     currentTexture = isFlipped ? deadTextureFlipped : deadTexture;
                 }
-                Loc = new Vector2(Loc.X, Physics.FLOOR_LOC - currentTexture.Height * scale);
+                Loc = new Vector2(Loc.X, Top + (bottomBeforeChangeTxtr - Bottom));
             }
         }
 

@@ -72,6 +72,7 @@ namespace EndlessMarioRebornGit
         public virtual void UpdateFrameStart()
         {
             //first, handle move strategy
+            HandleSpeedStartOfFrameStart();
             List<Command> cmnds = strtgy.GetCommands();
             foreach (Command cmnd in cmnds)
             {
@@ -99,9 +100,19 @@ namespace EndlessMarioRebornGit
             }
             else
             {
-                speedY = 0;
+                HandleSpeedYEndOfFrameStart();
             }
 
+        }
+
+        protected virtual void HandleSpeedYEndOfFrameStart()
+        {
+            speedY = 0;
+        }
+
+        protected virtual void HandleSpeedStartOfFrameStart()
+        {
+            // do nothing
         }
 
         public virtual void UpdateFrameEnd()
@@ -395,6 +406,10 @@ namespace EndlessMarioRebornGit
 
         }
 
+        protected virtual void HandleCommand(MoveUpCommand mvUpCmnd)
+        {
+
+        }
 
         public virtual void Walk(Direction dir)
         {

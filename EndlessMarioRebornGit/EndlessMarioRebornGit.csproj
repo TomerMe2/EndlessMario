@@ -59,6 +59,7 @@
     <Compile Include="Background.cs" />
     <Compile Include="Commands\ChestCellSwitchCommand.cs" />
     <Compile Include="Commands\InventorySwitchCommand.cs" />
+    <Compile Include="Commands\MoveUpCommand.cs" />
     <Compile Include="Commands\ShootCommand.cs" />
     <Compile Include="Commands\SwitchInventoryAndChestCommand.cs" />
     <Compile Include="FloatRectangle.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="ItemsThumbnails\ItemThumbnail.cs" />
     <Compile Include="MenuItems\BlackScreen.cs" />
     <Compile Include="Monsters\CannonBomb.cs" />
+    <Compile Include="Monsters\FlyingEnemy.cs" />
     <Compile Include="Monsters\Goomba.cs" />
     <Compile Include="Monsters\GreenTurtle.cs" />
     <Compile Include="Monsters\HugeCannonBomb.cs" />
@@ -89,6 +91,7 @@
     <Compile Include="Strategies\AlwaysRightStrategy.cs" />
     <Compile Include="Strategies\OnceLeftRightStrategy.cs" />
     <Compile Include="Strategies\RandomLeftRightStay.cs" />
+    <Compile Include="Strategies\RandomLeftRightUpStay.cs" />
     <Compile Include="Strategies\Strategy.cs" />
     <Compile Include="Strategies\UserMarioMovingStrategy.cs" />
     <Compile Include="MrioGame.cs" />
