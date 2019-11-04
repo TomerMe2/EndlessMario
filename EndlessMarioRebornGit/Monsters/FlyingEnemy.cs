@@ -27,7 +27,6 @@ namespace EndlessMarioRebornGit.Monsters
             base(texturesFacingRight, texturesFacingLeft, new Vector2(xLoc, Physics.FLOOR_LOC - texturesFacingLeft.ElementAt(0).Height * SCALE), SCALE, true,
                 ACCELERATION_X + (float)mrioPointsAtCreation / 100000, 0, MAX_SPEED + (float)mrioPointsAtCreation / 100000, flr, strtgy, deadTxtr, deadTxtrFlip)
         {
-            Loc = new Vector2(Loc.X, Loc.Y - 150);
         }
 
         protected override void HandleCommand(MoveUpCommand mvUpCmnd)
